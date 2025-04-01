@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Pro - Professional PDF Compression & Splitting</title>
+    <link rel="stylesheet" href="/style.css">
+    <meta name="description" content="Compress and split PDFs with enterprise-grade security. Your files are processed locally and never stored on our servers.">
+    <meta name="keywords" content="PDF, compress, split, security, privacy, free, local processing">
+    <meta name="author" content="Zhu Yongchi">
+    <!-- 添加favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230ea5e9'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM14 8V3.5L18.5 8H14zm2 11v-1a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1zm-6-5h4a1 1 0 0 0 0-2h-4a1 1 0 0 0 0 2zm-2-4h6a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2z'/></svg>">
+</head>
+<body class="bg-white">
+    <!-- Header -->
+    <header class="fixed w-full bg-white/80 backdrop-blur-md z-50 no-print">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold gradient-text">PDF Pro</div>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#features" class="text-gray-600 hover:text-primary-600">Features</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-primary-600">How It Works</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-primary-600">Pricing</a>
+                    <a href="#faq" class="text-gray-600 hover:text-primary-600">FAQ</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative group">
+                        <button id="language-selector" class="flex items-center space-x-1 text-gray-600 hover:text-primary-600" aria-label="Select language">
+                            <span id="current-language">English</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="language-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="en">English</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="zh">中文</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="es">Español</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="fr">Français</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="de">Deutsch</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="ja">日本語</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="ko">한국어</a>
+                        </div>
+                    </div>
+                    <a href="#upload" class="btn-primary">Get Started</a>
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-primary-600" aria-label="Toggle menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2">
+                <a href="#features" class="block py-2 text-gray-600 hover:text-primary-600">Features</a>
+                <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-primary-600">How It Works</a>
+                <a href="#pricing" class="block py-2 text-gray-600 hover:text-primary-600">Pricing</a>
+                <a href="#faq" class="block py-2 text-gray-600 hover:text-primary-600">FAQ</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="pt-32 pb-20 px-6">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 hero-title">
+                Professional PDF Processing<br>
+                <span class="gradient-text">Made Simple</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Compress and split PDFs with enterprise-grade security. Your files are processed locally and never stored on our servers.
+            </p>
+            <div id="upload" class="max-w-4xl mx-auto bg-gray-50 p-8 rounded-2xl shadow-lg upload-area">
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Select Operation</label>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button class="flex-1 bg-white border-2 border-primary-600 text-primary-600 px-6 py-3 rounded-lg hover:bg-primary-50 transition">Compress PDF</button>
+                        <button class="flex-1 bg-white border-2 border-primary-600 text-primary-600 px-6 py-3 rounded-lg hover:bg-primary-50 transition">Split PDF</button>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <label for="pdf-upload" class="block text-gray-700 text-sm font-bold mb-2">Upload Your PDF</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-primary-500 transition cursor-pointer">
+                        <input type="file" id="pdf-upload" class="hidden" accept=".pdf">
+                        <p class="text-gray-500">Drag and drop your PDF here or click to browse</p>
+                        <p class="text-sm text-gray-400 mt-2">Maximum file size: 5MB (Free Plan)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12">Why Choose PDF Pro?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="text-primary-600 text-2xl mb-4">🔒</div>
+                    <h3 class="text-xl font-bold mb-2">100% Secure</h3>
+                    <p class="text-gray-600">Your files are processed locally in your browser. We never store or transmit your documents.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="text-primary-600 text-2xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold mb-2">Lightning Fast</h3>
+                    <p class="text-gray-600">Advanced algorithms ensure quick processing while maintaining quality.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="text-primary-600 text-2xl mb-4">💎</div>
+                    <h3 class="text-xl font-bold mb-2">Professional Quality</h3>
+                    <p class="text-gray-600">Enterprise-grade compression and splitting technology.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12">How It Works</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-3xl mb-4">1️⃣</div>
+                    <h3 class="font-bold mb-2">Upload</h3>
+                    <p class="text-gray-600">Select your PDF file</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-4">2️⃣</div>
+                    <h3 class="font-bold mb-2">Choose Options</h3>
+                    <p class="text-gray-600">Select compression level or splitting parameters</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-4">3️⃣</div>
+                    <h3 class="font-bold mb-2">Process</h3>
+                    <p class="text-gray-600">We process your file locally</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-4">4️⃣</div>
+                    <h3 class="font-bold mb-2">Download</h3>
+                    <p class="text-gray-600">Get your processed PDF</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h3 class="text-xl font-bold mb-4">Free</h3>
+                    <p class="text-4xl font-bold mb-6">$0<span class="text-gray-500 text-base font-normal">/month</span></p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 1 file per day</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Max 5MB file size</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Basic compression</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Watermarked output</li>
+                    </ul>
+                    <button class="w-full bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition">Get Started</button>
+                </div>
+                <div class="bg-primary-600 text-white p-8 rounded-xl shadow-lg transform scale-105 md:scale-105 sm:scale-100">
+                    <h3 class="text-xl font-bold mb-4">Pro</h3>
+                    <p class="text-4xl font-bold mb-6">$9.99<span class="text-gray-200 text-base font-normal">/month</span></p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> Unlimited files</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> Max 100MB file size</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> Advanced compression</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> No watermark</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> Priority processing</li>
+                    </ul>
+                    <button class="w-full bg-white text-primary-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition">Subscribe Now</button>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h3 class="text-xl font-bold mb-4">Enterprise</h3>
+                    <p class="text-4xl font-bold mb-6">$49.99<span class="text-gray-500 text-base font-normal">/month</span></p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Everything in Pro</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Unlimited file size</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> API access</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Custom branding</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 24/7 support</li>
+                    </ul>
+                    <button class="w-full bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <h3 class="font-bold mb-2">Is my data secure?</h3>
+                    <p class="text-gray-600">Yes, absolutely. All processing happens locally in your browser. We never store or transmit your files to any server.</p>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <h3 class="font-bold mb-2">How does the compression work?</h3>
+                    <p class="text-gray-600">We use advanced algorithms to optimize PDF content while maintaining quality. This includes image optimization, font subsetting, and structure optimization.</p>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <h3 class="font-bold mb-2">What's the maximum file size?</h3>
+                    <p class="text-gray-600">Free users can process files up to 5MB, Pro users up to 100MB, and Enterprise users have no limits.</p>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <h3 class="font-bold mb-2">Can I process multiple files at once?</h3>
+                    <p class="text-gray-600">Yes, Pro and Enterprise users can process multiple files simultaneously. Free users are limited to one file per day.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 no-print">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">PDF Pro</h3>
+                    <p class="text-gray-400">Professional PDF processing tools for everyone.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#features" class="text-gray-400 hover:text-white">Features</a></li>
+                        <li><a href="#pricing" class="text-gray-400 hover:text-white">Pricing</a></li>
+                        <li><a href="#faq" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Contact</h4>
+                    <p class="text-gray-400">Email: <a href="mailto:527856337@qq.com" class="hover:text-white">527856337@qq.com</a></p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>© 2024 PDF Pro. All rights reserved. Created by Zhu Yongchi</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 加载指示器模板 -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p id="loading-text" class="text-gray-700">Processing your file...</p>
+        </div>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+    
+    <!-- 移动菜单脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                
+                // 点击移动菜单项后关闭菜单
+                const mobileMenuItems = mobileMenu.querySelectorAll('a');
+                mobileMenuItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
