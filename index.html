@@ -129,7 +129,7 @@
     <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-2 px-4 text-center relative">
         <p class="font-medium">
             🎁 <span class="animate-pulse inline-block">限时优惠</span>: 免费用户文件大小上限提升至 <span class="font-bold underline">50MB</span>! 
-            <span class="hidden sm:inline">截止日期: 2024年5月15日。</span>
+            <span class="hidden sm:inline">截止日期: 2025年5月15日。</span>
             <a href="#pricing" class="ml-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-full text-sm transition">了解更多 →</a>
         </p>
     </div>
@@ -142,10 +142,10 @@
                     <div class="text-2xl font-bold gradient-text">PDF Pro</div>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#features" class="text-gray-600 hover:text-primary-600">功能特点</a>
-                    <a href="#how-it-works" class="text-gray-600 hover:text-primary-600">如何工作</a>
-                    <a href="#pricing" class="text-gray-600 hover:text-primary-600">定价</a>
-                    <a href="#faq" class="text-gray-600 hover:text-primary-600">常见问题</a>
+                    <a href="#features" class="text-gray-600 hover:text-primary-600" data-i18n="features">功能特点</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-primary-600" data-i18n="howItWorks">如何工作</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-primary-600" data-i18n="pricing">定价</a>
+                    <a href="#faq" class="text-gray-600 hover:text-primary-600" data-i18n="faq">常见问题</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative group">
@@ -156,16 +156,16 @@
                             </svg>
                         </button>
                         <div id="language-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="en">英语</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="en">English</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="zh">中文</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="es">Español</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="fr">Français</a>
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="de">deutsch</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="de">Deutsch</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="ja">日本語</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="ko">한국어</a>
                         </div>
                     </div>
-                    <a href="#upload" class="btn-primary">立即开始</a>
+                    <a href="#upload" class="btn-primary" data-i18n="getStarted">立即开始</a>
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-primary-600" aria-label="Toggle menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +226,7 @@
                         <p class="font-bold">🎁 限时优惠：</p>
                     </div>
                     <div class="ml-0 md:ml-2 text-left">
-                        <p><span class="font-bold text-red-600">免费用户文件大小限制已提升至50MB</span> - 将于一个月后恢复至5MB</p>
+                        <p><span class="font-bold text-red-600">免费用户文件大小限制已提升至50MB</span> - 将于两个月后恢复至5MB</p>
                         <p class="mt-1 text-sm font-medium">优惠结束倒计时：<span id="countdown-timer" class="font-bold text-red-600">30天00时00分00秒</span></p>
                     </div>
                 </div>
@@ -246,7 +246,14 @@
                         <input type="file" id="pdf-upload" class="hidden" accept=".pdf">
                         <p class="text-gray-500">在此处拖放PDF或点击浏览</p>
                         <p class="text-sm text-gray-400 mt-2">📣 <span class="text-green-600 font-semibold">限时优惠：</span> 最大文件大小：<span class="text-red-600 font-bold">50MB</span>（免费计划）</p>
-                        <button class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition" id="browse-button">选择文件</button>
+                        <button id="pdf-select-button" class="mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-bold shadow-md">
+                            <span class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                                选择文件
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -368,7 +375,7 @@
             <div class="max-w-3xl mx-auto space-y-6">
                 <div class="bg-gray-50 p-6 rounded-lg">
                     <h3 class="font-bold text-lg mb-2">关于免费版50MB文件大小限制优惠</h3>
-                    <p class="text-gray-700">为了回馈用户，我们将免费版文件大小限制从5MB临时提升至50MB。此优惠将于2024年5月15日结束，之后将恢复至原来的5MB限制。</p>
+                    <p class="text-gray-700">为了回馈用户，我们将免费版文件大小限制从5MB临时提升至50MB。此优惠将于2025年5月15日结束，之后将恢复至原来的5MB限制。</p>
                 </div>
                 
                 <div class="bg-gray-50 p-6 rounded-lg">
@@ -466,14 +473,20 @@
                 <div>
                     <h4 class="font-bold mb-4">关注我们</h4>
                     <div class="flex space-x-3">
-                        <a href="#" class="text-gray-400 hover:text-white">
+                        <a href="javascript:void(0)" class="footer-share-button text-gray-400 hover:text-white" data-platform="wechat">
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8.113 10.406c-.268 0-.484-.213-.484-.475s.217-.476.484-.476c.269 0 .484.213.484.476 0 .262-.216.475-.484.475m8.357 0c-.268 0-.484-.213-.484-.475s.217-.476.484-.476c.268 0 .484.213.484.476 0 .262-.216.475-.484.475m-7.271 3.031l-.684 1.025c-.187.277-.513.41-.843.306-.329-.105-.479-.42-.329-.691l.66-.963c.329 0 .696.038 1.196.323m8.312-7.436c-4.871 0-8.835 3.241-8.835 7.22 0 2.138 1.079 4.044 2.779 5.36l-.61 1.792 2.143-.666c.762.199 1.566.326 2.402.326 4.873 0 8.836-3.242 8.836-7.219 0-3.98-3.964-7.813-8.836-7.813m0 13.246c-.84 0-1.656-.138-2.432-.36l-2.373.717.666-1.985c-1.552-1.306-2.549-3.178-2.549-5.284 0-3.908 3.783-7.082 8.457-7.082 4.683 0 8.835 3.174 8.835 7.082 0 3.907-3.959 6.912-8.604 6.912m-8.45-12.959c-6.022 0-10.918 4.024-10.918 8.959 0 2.648 1.339 5.037 3.441 6.699l-.717 2.237 2.644-.837c.961.248 1.969.414 3.017.414 6.022 0 10.918-4.023 10.918-8.958 0-4.934-4.896-8.514-10.918-8.514m0 16.22c-1.012 0-2.007-.158-2.927-.43l-2.882.852.805-2.368c-1.882-1.568-3.075-3.823-3.075-6.3 0-4.751 4.632-8.599 10.44-8.599 5.808 0 10.918 3.847 10.918 8.599 0 4.751-4.896 8.246-10.44 8.246"/></svg>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
+                        <a href="javascript:void(0)" class="footer-share-button text-gray-400 hover:text-white" data-platform="qq">
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.987 0C5.373 0 0 5.373 0 11.987c0 6.627 5.373 12 11.987 12 6.627 0 12-5.373 12-12C24 5.373 18.614.013 11.987 0zm4.92 15.787c-.327.961-1.852.667-2.667 1.64-.773.906.04 2.667-2.293 2.307-2.347-.38-3.334-1.747-2.667-2.307.667-.547 1.32.107 1.32.107s.108-.32-.132-.587c-.227-.254-.961.307-.961-.667 0-.573.773-.423.773-.423.053-.627-.327-.96-.327-1.16 0-.107.053-.213.16-.266.666-.107 1.64 1.32 1.64 1.32s.106-.547 0-.854c-.107-.293-.694-1.507.213-2.347 0 0 .96 1.507 3.067 1.574 2.107.066 2.667-1.574 2.667-1.574.907.84.32 2.054.213 2.347-.107.307 0 .854 0 .854s.974-1.427 1.64-1.32c.107.053.16.159.16.266 0 .214-.373.534-.32 1.16 0 0 .773-.16.773.423 0 .974-.747.414-.96.667-.227.266-.133.587-.133.587s.66-.654 1.32-.107c.654.56-.334 1.927-2.667 2.307-2.347.373-1.56-1.387-2.294-2.307-.827-.973-2.347-.666-2.667-1.64-.187-.56.347-1.24 1.147-2.773.8-1.574.4-2.604.4-2.627.08-.213 0-.373-.08-.48-.307-.413-1.027-.16-1.027-.16s0-.867.453-1.4c.48-.547 1.267-.56 1.267-.56s-.026-.76-.186-1.16c-.16-.413-.374-.627-.16-1.507.533-2.32 3.854-3.84 3.854-3.84s3.32 1.52 3.853 3.84c.214.88 0 1.093-.16 1.507-.16.4-.186 1.16-.186 1.16s.8.013 1.266.56c.454.533.454 1.4.454 1.4s-.707-.253-1.027.16c-.8.106-.16.266-.8.48 0 .066-.387 1.066.413 2.627.773 1.533 1.347 2.213 1.133 2.773z"/></svg>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
+                        <a href="javascript:void(0)" class="footer-share-button text-gray-400 hover:text-white" data-platform="weibo">
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="currentColor"><path d="M851.4 590.193c-22.196-66.233-90.385-90.422-105.912-91.863-15.523-1.442-29.593-9.94-19.295-27.505 10.302-17.566 29.304-68.684-7.248-104.681-36.564-36.14-116.512-22.462-173.094 0.866-56.434 23.327-53.39 7.055-51.65-8.925 1.89-16.848 32.355-111.02-60.791-122.395C311.395 220.86 154.85 370.754 99.572 457.15 16 587.607 29.208 675.873 29.208 675.873h0.58c10.009 121.819 190.787 218.869 412.328 218.869 190.5 0 350.961-71.853 398.402-169.478 0 0 0.143-0.433 0.575-1.156 4.938-10.506 8.71-21.168 11.035-32.254 6.668-26.205 11.755-64.215-0.728-101.66z m-436.7 251.27c-157.71 0-285.674-84.095-285.674-187.768 0-103.671 127.82-187.76 285.674-187.76 157.705 0 285.673 84.089 285.673 187.76 0 103.815-127.968 187.768-285.673 187.768z"/><path d="M803.096 425.327c2.896 1.298 5.945 1.869 8.994 1.869 8.993 0 17.7-5.328 21.323-14.112 5.95-13.964 8.993-28.793 8.993-44.205 0-62.488-51.208-113.321-114.181-113.321-15.379 0-30.32 3.022-44.396 8.926-11.755 4.896-17.263 18.432-12.335 30.24 4.933 11.662 18.572 17.134 30.465 12.238 8.419-3.46 17.268-5.33 26.409-5.33 37.431 0 67.752 30.241 67.752 67.247 0 9.068-1.735 17.857-5.369 26.202-5.224 11.826 0.29 25.807 12.345 30.952zM726.451 114.181c-25.553 0-50.399 3.948-74.3 11.755-12.104 4.043-18.572 17.134-14.541 29.26 4.088 12.121 17.183 18.719 29.298 14.551 18.575-6.35 38.323-9.516 59.254-9.516 101.661 0 184.334 82.969 184.334 185.153 0 20.952-3.518 41.401-10.595 60.698-4.936 12.97 1.429 27.417 14.575 32.491 2.933 1.013 6.002 1.518 9.074 1.518 10.009 0 19.425-6.345 22.638-16.214 8.994-24.367 13.534-49.896 13.534-77.92-0.287-126.094-103.03-228.775-229.111-228.775z" /></svg>
+                        </a>
+                        <a href="javascript:void(0)" class="footer-share-button text-gray-400 hover:text-white" data-platform="copy">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                            </svg>
                         </a>
                     </div>
                 </div>
@@ -496,9 +509,111 @@
     
     <!-- 移动菜单脚本 -->
     <script>
+        // 基于地理位置自动选择语言
+        function autoDetectLanguage() {
+            // 尝试使用IP-API获取用户地理位置信息
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('地理位置检测结果:', data);
+                    // 根据国家/地区代码选择语言
+                    const country = data.country_code;
+                    let detectedLang = 'en'; // 默认为英语
+                    
+                    // 如果是中国大陆、香港、澳门或台湾，使用中文
+                    if (['CN', 'HK', 'MO', 'TW'].includes(country)) {
+                        detectedLang = 'zh';
+                    }
+                    
+                    console.log('基于地理位置自动选择语言:', detectedLang);
+                    
+                    // 如果localStorage中没有存储语言偏好，则使用检测到的语言
+                    const storedLang = localStorage.getItem('preferredLanguage');
+                    if (!storedLang) {
+                        // 更新UI显示
+                        updateLanguageUI(detectedLang);
+                        // 触发语言切换事件
+                        const langButtons = document.querySelectorAll('[data-lang="' + detectedLang + '"]');
+                        if (langButtons.length > 0) {
+                            langButtons[0].click();
+                        }
+                        
+                        // 存储语言偏好
+                        localStorage.setItem('preferredLanguage', detectedLang);
+                    } else {
+                        // 使用已存储的语言偏好
+                        updateLanguageUI(storedLang);
+                    }
+                })
+                .catch(error => {
+                    console.error('无法检测地理位置:', error);
+                    // 默认使用浏览器语言
+                    const browserLang = navigator.language.split('-')[0];
+                    if (browserLang === 'zh') {
+                        updateLanguageUI('zh');
+                    } else {
+                        updateLanguageUI('en');
+                    }
+                });
+        }
+        
+        // 更新语言UI显示
+        function updateLanguageUI(lang) {
+            const currentLangElement = document.getElementById('current-language');
+            if (currentLangElement) {
+                // 根据语言代码设置显示的文本
+                switch(lang) {
+                    case 'zh':
+                        currentLangElement.textContent = '中文';
+                        break;
+                    case 'en':
+                        currentLangElement.textContent = 'English';
+                        break;
+                    case 'es':
+                        currentLangElement.textContent = 'Español';
+                        break;
+                    case 'fr':
+                        currentLangElement.textContent = 'Français';
+                        break;
+                    case 'de':
+                        currentLangElement.textContent = 'Deutsch';
+                        break;
+                    case 'ja':
+                        currentLangElement.textContent = '日本語';
+                        break;
+                    case 'ko':
+                        currentLangElement.textContent = '한국어';
+                        break;
+                    default:
+                        currentLangElement.textContent = 'English';
+                }
+            }
+            
+            // 高亮显示当前选中的语言
+            document.querySelectorAll('#language-dropdown a').forEach(link => {
+                if (link.getAttribute('data-lang') === lang) {
+                    link.classList.add('bg-primary-50', 'text-primary-600', 'font-medium');
+                } else {
+                    link.classList.remove('bg-primary-50', 'text-primary-600', 'font-medium');
+                }
+            });
+            
+            // 移动菜单中的语言按钮
+            document.querySelectorAll('[data-lang]').forEach(button => {
+                if (button.getAttribute('data-lang') === lang) {
+                    button.classList.remove('bg-gray-200', 'text-gray-700');
+                    button.classList.add('bg-primary-600', 'text-white');
+                } else {
+                    button.classList.remove('bg-primary-600', 'text-white');
+                    button.classList.add('bg-gray-200', 'text-gray-700');
+                }
+            });
+        }
+        
         // 启动倒计时
         function startCountdown() {
-            const endDate = new Date('2024-05-15T23:59:59');
+            // 更新倒计时结束日期为2025年5月15日
+            const endDate = new Date('2025-05-15T23:59:59');
             const countdownEl = document.getElementById('countdown-timer');
             
             if (!countdownEl) return;
@@ -520,8 +635,11 @@
                 countdownEl.textContent = `${days}天${hours.toString().padStart(2, '0')}时${minutes.toString().padStart(2, '0')}分${seconds.toString().padStart(2, '0')}秒`;
             }
             
+            // 立即更新一次
             updateCountdown();
-            setInterval(updateCountdown, 1000);
+            
+            // 每秒更新一次
+            return setInterval(updateCountdown, 1000);
         }
         
         // 移动菜单逻辑
@@ -557,8 +675,6 @@
                 langButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         const lang = this.getAttribute('data-lang');
-                        // 更改语言逻辑（如果需要实现）
-                        
                         // 更新按钮样式
                         langButtons.forEach(btn => {
                             btn.classList.remove('bg-primary-600', 'text-white');
@@ -566,6 +682,50 @@
                         });
                         this.classList.remove('bg-gray-200', 'text-gray-700');
                         this.classList.add('bg-primary-600', 'text-white');
+                        
+                        // 保存用户语言偏好
+                        localStorage.setItem('preferredLanguage', lang);
+                        // 更新UI显示
+                        updateLanguageUI(lang);
+                    });
+                });
+            }
+        }
+        
+        // 初始化语言切换器
+        function initLanguageSelector() {
+            const languageSelector = document.getElementById('language-selector');
+            const languageDropdown = document.getElementById('language-dropdown');
+            
+            if (languageSelector && languageDropdown) {
+                // 点击语言选择器显示/隐藏下拉菜单
+                languageSelector.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    languageDropdown.classList.toggle('hidden');
+                });
+                
+                // 点击页面其他地方关闭下拉菜单
+                document.addEventListener('click', function(e) {
+                    if (!languageSelector.contains(e.target) && !languageDropdown.contains(e.target)) {
+                        languageDropdown.classList.add('hidden');
+                    }
+                });
+                
+                // 处理语言切换
+                const languageOptions = languageDropdown.querySelectorAll('[data-lang]');
+                languageOptions.forEach(option => {
+                    option.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const lang = this.getAttribute('data-lang');
+                        
+                        // 保存用户语言偏好
+                        localStorage.setItem('preferredLanguage', lang);
+                        
+                        // 更新UI显示
+                        updateLanguageUI(lang);
+                        
+                        // 隐藏下拉菜单
+                        languageDropdown.classList.add('hidden');
                     });
                 });
             }
@@ -573,8 +733,90 @@
         
         // 文档加载完成后执行
         document.addEventListener('DOMContentLoaded', function() {
-            startCountdown();
+            // 自动检测语言
+            autoDetectLanguage();
+            
+            // 确保倒计时正常启动
+            const countdownTimer = startCountdown();
+            
+            // 初始化菜单
             initMobileMenu();
+            
+            // 初始化语言选择器
+            initLanguageSelector();
+            
+            // 手动检查倒计时是否正常运行，如果没有则重新启动
+            setTimeout(function() {
+                const countdownEl = document.getElementById('countdown-timer');
+                if (countdownEl && countdownEl.textContent === '已结束') {
+                    // 检查当前日期是否真的过了结束日期
+                    const endDate = new Date('2025-05-15T23:59:59');
+                    const now = new Date();
+                    if (now < endDate) {
+                        // 如果没有过期但显示已结束，则重启倒计时
+                        clearInterval(countdownTimer);
+                        startCountdown();
+                    }
+                }
+            }, 2000);
+            
+            // 确保分享按钮也能正常工作
+            const footerShareButtons = document.querySelectorAll('.footer-share-button');
+            footerShareButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const platform = this.getAttribute('data-platform');
+                    if (platform) {
+                        // 尝试直接调用社交分享功能
+                        try {
+                            switch(platform) {
+                                case 'wechat':
+                                    const qrModal = document.getElementById('qr-modal');
+                                    const qrTitle = document.getElementById('qr-title');
+                                    const qrcodeContainer = document.getElementById('qrcode-container');
+                                    
+                                    if (qrModal && qrTitle && qrcodeContainer) {
+                                        qrTitle.textContent = '分享到微信';
+                                        qrcodeContainer.innerHTML = '';
+                                        
+                                        const url = encodeURIComponent(window.location.href);
+                                        const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${url}`;
+                                        const qrImage = document.createElement('img');
+                                        qrImage.src = qrImageUrl;
+                                        qrImage.alt = '分享二维码';
+                                        qrImage.className = 'w-full h-full';
+                                        qrcodeContainer.appendChild(qrImage);
+                                        
+                                        qrModal.classList.remove('hidden');
+                                    }
+                                    break;
+                                case 'qq':
+                                    const qqUrl = encodeURIComponent(window.location.href);
+                                    const qqTitle = encodeURIComponent(document.title);
+                                    const qqDesc = encodeURIComponent('专业的PDF处理工具，免费用户现在可享受50MB上传限制！');
+                                    window.open(`http://connect.qq.com/widget/shareqq/index.html?url=${qqUrl}&title=${qqTitle}&desc=${qqDesc}`, '_blank');
+                                    break;
+                                case 'weibo':
+                                    const wbUrl = encodeURIComponent(window.location.href);
+                                    const wbTitle = encodeURIComponent(document.title);
+                                    window.open(`http://service.weibo.com/share/share.php?url=${wbUrl}&title=${wbTitle}`, '_blank');
+                                    break;
+                                case 'copy':
+                                    navigator.clipboard.writeText(window.location.href)
+                                        .then(() => {
+                                            alert('链接已复制到剪贴板！');
+                                        })
+                                        .catch(err => {
+                                            alert('复制失败: ' + err);
+                                        });
+                                    break;
+                            }
+                        } catch (error) {
+                            console.error('分享功能出错:', error);
+                        }
+                    }
+                });
+            });
         });
     </script>
 </body>

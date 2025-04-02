@@ -11,6 +11,14 @@ i18next
   .use(LanguageDetector)
   .init({
     fallbackLng: 'en',
+    detection: {
+      // 设置语言检测顺序
+      order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
+      lookupQuerystring: 'lng',
+      lookupCookie: 'i18next',
+      lookupLocalStorage: 'i18nextLng',
+      caches: ['localStorage', 'cookie'],
+    },
     resources: {
       en: {
         translation: {
@@ -28,7 +36,7 @@ i18next
             splitPDF: 'Split PDF',
             uploadPDF: 'Upload Your PDF',
             dragDrop: 'Drag and drop your PDF here or click to browse',
-            maxFileSize: 'Maximum file size: 5MB (Free Plan)'
+            maxFileSize: 'Maximum file size: 50MB (Free Plan, limited time offer until May 15, 2025)'
           },
           features: {
             title: 'Why Choose PDF Pro?',
@@ -189,7 +197,7 @@ i18next
             splitPDF: '拆分PDF',
             uploadPDF: '上传PDF',
             dragDrop: '拖放PDF文件到这里或点击浏览',
-            maxFileSize: '最大文件大小：5MB（免费版）'
+            maxFileSize: '最大文件大小：50MB（免费版，限时优惠至2025年5月15日）'
           },
           features: {
             title: '为什么选择PDF Pro？',
@@ -390,7 +398,7 @@ function initializeUploadArea() {
   const uploadArea = document.querySelector('.upload-area');
   const uploadDropArea = document.getElementById('upload-drop-area');
   const fileInput = document.getElementById('pdf-upload');
-  const browseButton = document.getElementById('browse-button');
+  const selectButton = document.getElementById('pdf-select-button');
   
   if (!uploadArea) return;
   
@@ -417,26 +425,34 @@ function initializeUploadArea() {
     
     // 点击上传区域触发文件选择
     uploadDropArea.addEventListener('click', (e) => {
-      if (e.target !== browseButton) {
+      // 阻止冒泡确保不会重复触发事件
+      if (e.target !== selectButton && !selectButton.contains(e.target)) {
         fileInput.click();
       }
     });
   }
   
-  // 专门的浏览按钮
-  if (browseButton) {
-    browseButton.addEventListener('click', (e) => {
+  // 专门的选择文件按钮
+  if (selectButton) {
+    selectButton.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation(); // 防止冒泡到上传区域
-      fileInput.click();
+      console.log('选择文件按钮被点击');
+      if (fileInput) {
+        fileInput.click();
+      }
     });
   }
   
   if (fileInput) {
     fileInput.addEventListener('change', (e) => {
+      console.log('文件输入变化');
       if (fileInput.files.length) {
         handleFileUpload(fileInput.files[0]);
       }
     });
+  } else {
+    console.error('未找到文件输入元素');
   }
 }
 
@@ -516,35 +532,42 @@ function initializeLanguageSwitcher() {
 
 // 处理文件上传
 async function handleFileUpload(file) {
-  // 检查文件类型
+  if (!file) {
+    console.error('No file selected');
+    return;
+  }
+  
+  console.log('文件选择:', file.name, file.type, file.size);
+  
+  // 检查文件类型是否为PDF
   if (file.type !== 'application/pdf') {
     alert(i18next.t('processing.invalidFile'));
     return;
   }
   
   // 限时促销：检查当前日期是否在促销期内
-  const promotionEndDate = new Date('2024-05-15'); // 设置促销结束日期，一个月后
+  const promotionEndDate = new Date('2025-05-15'); // 设置促销结束日期为2025年5月15日
   const currentDate = new Date();
   
-  // 根据当前日期确定文件大小限制
-  let maxSizeLimit = 50 * 1024 * 1024; // 默认为促销期间的50MB限制
+  // 设置文件大小限制
+  let maxSizeBytes = 5 * 1024 * 1024; // 默认5MB
   
-  // 如果当前日期超过促销结束日期，则使用正常限制
-  if (currentDate > promotionEndDate) {
-    maxSizeLimit = 5 * 1024 * 1024; // 回到正常的5MB限制
+  // 如果当前日期在促销期内，允许50MB
+  if (currentDate <= promotionEndDate) {
+    maxSizeBytes = 50 * 1024 * 1024; // 50MB
   }
   
   // 检查文件大小
-  if (file.size > maxSizeLimit) {
-    // 显示相应的错误消息
+  if (file.size > maxSizeBytes) {
     if (currentDate <= promotionEndDate) {
-      alert('文件超过50MB限制。请升级以获得更大文件支持。');
+      alert('文件超过50MB限制。请升级到专业版以处理更大的文件。');
     } else {
-      alert('文件超过5MB限制。请升级以获得更大文件支持。');
+      alert('促销期已结束，免费用户文件大小限制为5MB。请升级到专业版以处理更大的文件。');
     }
     return;
   }
   
+  // 继续处理文件
   try {
     // 读取文件为ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
@@ -635,33 +658,82 @@ function initializeShareFeature() {
   const downloadQrBtn = document.getElementById('download-qr');
   const copySuccess = document.getElementById('copy-success');
   
-  if (!shareToggle || !shareButtons) return;
+  console.log('初始化社交分享功能');
   
-  // 显示/隐藏分享按钮
-  shareToggle.addEventListener('click', () => {
-    const isHidden = shareButtons.classList.contains('hidden');
-    
-    if (isHidden) {
-      shareButtons.classList.remove('hidden');
-      // 延迟一帧以确保DOM更新，然后添加动画
-      requestAnimationFrame(() => {
-        shareButtons.classList.remove('opacity-0', 'translate-y-4');
-      });
-    } else {
-      shareButtons.classList.add('opacity-0', 'translate-y-4');
-      // 等待过渡完成后隐藏
-      setTimeout(() => {
-        shareButtons.classList.add('hidden');
-      }, 300);
-    }
+  // 检查share-toggle是否存在
+  if (!shareToggle) {
+    console.warn('Share toggle button not found');
+  }
+  
+  // 检查share-buttons是否存在
+  if (!shareButtons) {
+    console.warn('Share buttons container not found');
+  }
+  
+  // 悬浮按钮功能
+  if (shareToggle && shareButtons) {
+    // 显示/隐藏分享按钮
+    shareToggle.addEventListener('click', () => {
+      console.log('Share toggle clicked');
+      const isHidden = shareButtons.classList.contains('hidden');
+      
+      if (isHidden) {
+        shareButtons.classList.remove('hidden');
+        // 延迟一帧以确保DOM更新，然后添加动画
+        requestAnimationFrame(() => {
+          shareButtons.classList.remove('opacity-0', 'translate-y-4');
+        });
+      } else {
+        shareButtons.classList.add('opacity-0', 'translate-y-4');
+        // 等待过渡完成后隐藏
+        setTimeout(() => {
+          shareButtons.classList.add('hidden');
+        }, 300);
+      }
+    });
+  }
+  
+  // 处理所有分享按钮，包括悬浮按钮和底部社交图标
+  const allShareButtons = document.querySelectorAll('.share-button, .footer-share-button');
+  console.log('找到分享按钮数量:', allShareButtons.length);
+  
+  // 详细打印找到的按钮信息
+  allShareButtons.forEach((button, index) => {
+    const platform = button.getAttribute('data-platform');
+    const classes = button.className;
+    console.log(`按钮 ${index+1}: 平台=${platform}, 类名=${classes}`);
   });
   
-  // 处理各个分享平台
-  const shareButtonsList = document.querySelectorAll('.share-button');
-  shareButtonsList.forEach(button => {
-    button.addEventListener('click', () => {
+  allShareButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
       const platform = button.getAttribute('data-platform');
-      shareContent(platform);
+      console.log('分享按钮被点击，平台:', platform);
+      if (platform) {
+        shareContent(platform);
+      } else {
+        console.warn('按钮未设置data-platform属性');
+      }
+    });
+  });
+  
+  // 专门处理页脚分享按钮
+  const footerShareButtons = document.querySelectorAll('.footer-share-button');
+  console.log('找到页脚分享按钮数量:', footerShareButtons.length);
+  
+  footerShareButtons.forEach((button, index) => {
+    console.log(`页脚按钮 ${index+1}: 平台=${button.getAttribute('data-platform')}`);
+    // 确保页脚按钮也有事件监听器
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // 阻止事件冒泡
+      const platform = button.getAttribute('data-platform');
+      console.log('页脚分享按钮被点击，平台:', platform);
+      if (platform) {
+        shareContent(platform);
+      } else {
+        console.warn('页脚按钮未设置data-platform属性');
+      }
     });
   });
   
@@ -670,15 +742,20 @@ function initializeShareFeature() {
     closeModal.addEventListener('click', () => {
       qrModal.classList.add('hidden');
     });
+  } else {
+    console.warn('Close modal button not found');
   }
   
   // 下载二维码
   if (downloadQrBtn) {
     downloadQrBtn.addEventListener('click', downloadQRCode);
+  } else {
+    console.warn('Download QR button not found');
   }
   
   // 分享内容
   function shareContent(platform) {
+    console.log('执行分享到平台:', platform);
     const url = encodeURIComponent(window.location.href);
     const title = encodeURIComponent(document.title);
     const description = encodeURIComponent('专业的PDF处理工具，免费用户现在可享受50MB上传限制！');
@@ -709,18 +786,32 @@ function initializeShareFeature() {
             alert('复制失败: ' + err);
           });
         break;
+      default:
+        console.warn(`未知的分享平台: ${platform}`);
     }
   }
   
   // 显示二维码
   function showQRCode(title, url) {
-    if (!qrModal || !qrTitle || !qrcodeContainer) return;
+    if (!qrModal) {
+      console.error('QR Modal not found');
+      return;
+    }
+    
+    if (!qrTitle) {
+      console.error('QR Title element not found');
+      return;
+    }
+    
+    if (!qrcodeContainer) {
+      console.error('QRCode container not found');
+      return;
+    }
     
     qrTitle.textContent = `分享到${title}`;
     qrcodeContainer.innerHTML = ''; // 清空容器
     
-    // 创建QR代码 - 这里使用第三方库 qrcode.js
-    // 如果你没有添加qrcode.js库，可以使用以下在线API生成二维码
+    // 创建QR代码 - 使用在线API生成二维码
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${url}`;
     const qrImage = document.createElement('img');
     qrImage.src = qrImageUrl;
@@ -735,7 +826,10 @@ function initializeShareFeature() {
   // 下载二维码
   function downloadQRCode() {
     const qrImg = qrcodeContainer.querySelector('img');
-    if (!qrImg) return;
+    if (!qrImg) {
+      console.error('QR image not found');
+      return;
+    }
     
     // 创建临时链接并触发下载
     const a = document.createElement('a');
