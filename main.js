@@ -584,47 +584,204 @@ async function handleFileUpload(file) {
   }
 }
 
-// 压缩PDF（示例实现）
+// 压缩PDF（实际实现）
 async function compressPDF(arrayBuffer) {
   try {
-    alert('PDF压缩功能正在开发中...');
-    // 实际实现将在这里添加
+    // 显示处理加载中
+    showLoadingOverlay(i18next.t('processing.compressing'));
+    
     // 1. 加载PDF文档
-    // 2. 应用压缩算法
-    // 3. 保存结果
-    
-    // 使用pdf-lib操作PDF
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-    // ... 压缩操作 ...
     
-    // 下载结果
-    // const pdfBytes = await pdfDoc.save();
-    // downloadPDF(pdfBytes, 'compressed.pdf');
+    // 获取原始文件大小
+    const originalSize = arrayBuffer.byteLength;
+    
+    // 2. 应用压缩算法
+    // PDF-LIB不直接支持高级压缩，但我们可以进行一些基本优化
+    const pages = pdfDoc.getPages();
+    
+    // 创建一个新的PDF文档
+    const newPdfDoc = await PDFLib.PDFDocument.create();
+    
+    // 复制所有页面到新文档
+    for (let i = 0; i < pages.length; i++) {
+      // 显示进度
+      showLoadingOverlay(`${i18next.t('processing.compressing')} (${i+1}/${pages.length})`);
+      
+      // 从原始文档复制页面
+      const [newPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
+      newPdfDoc.addPage(newPage);
+    }
+    
+    // 3. 保存结果
+    // 使用较低质量设置保存PDF以减小大小
+    const pdfBytes = await newPdfDoc.save({
+      useObjectStreams: true,
+      addDefaultPage: false,
+      useCompression: true
+    });
+    
+    // 获取压缩后大小
+    const compressedSize = pdfBytes.byteLength;
+    
+    // 显示压缩结果
+    hideLoadingOverlay();
+    
+    // 计算节省的空间百分比
+    const savedPercentage = Math.round(((originalSize - compressedSize) / originalSize) * 100);
+    
+    // 显示压缩报告
+    alert(`
+      ${i18next.t('processing.compressionReport')}:
+      ${i18next.t('processing.originalSize')}: ${formatFileSize(originalSize)}
+      ${i18next.t('processing.compressedSize')}: ${formatFileSize(compressedSize)}
+      ${i18next.t('processing.spaceSaved')}: ${savedPercentage}%
+    `);
+    
+    // 下载压缩后的PDF
+    downloadPDF(pdfBytes, 'compressed.pdf');
   } catch (error) {
+    hideLoadingOverlay();
     console.error('Error compressing PDF:', error);
     alert(i18next.t('processing.error') + error.message);
   }
 }
 
-// 拆分PDF（示例实现）
+// 拆分PDF（实际实现）
 async function splitPDF(arrayBuffer) {
   try {
-    alert('PDF拆分功能正在开发中...');
-    // 实际实现将在这里添加
+    // 显示处理加载中
+    showLoadingOverlay(i18next.t('processing.splitting'));
+    
     // 1. 加载PDF文档
-    // 2. 获取页面并拆分
-    // 3. 保存结果
-    
-    // 使用pdf-lib操作PDF
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-    // ... 拆分操作 ...
+    const pages = pdfDoc.getPages();
+    const pageCount = pages.length;
     
-    // 下载结果
-    // const pdfBytes = await pdfDoc.save();
-    // downloadPDF(pdfBytes, 'split.pdf');
+    // 询问用户的拆分方式
+    const splitMode = prompt(`
+      ${i18next.t('processing.splitMode')}:
+      1. ${i18next.t('processing.splitAllPages')}
+      2. ${i18next.t('processing.customSplit')}
+      
+      ${i18next.t('processing.enterPagesCustom')} (1-${pageCount})
+    `, '1');
+    
+    // 如果用户取消，则退出
+    if (splitMode === null) {
+      hideLoadingOverlay();
+      return;
+    }
+    
+    // 处理拆分模式
+    if (splitMode === '1') {
+      // 拆分所有页面
+      for (let i = 0; i < pageCount; i++) {
+        // 更新加载进度
+        showLoadingOverlay(`${i18next.t('processing.splitting')} (${i+1}/${pageCount})`);
+        
+        // 创建新文档
+        const newPdfDoc = await PDFLib.PDFDocument.create();
+        
+        // 复制单个页面
+        const [newPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
+        newPdfDoc.addPage(newPage);
+        
+        // 保存并下载这个单页PDF
+        const pdfBytes = await newPdfDoc.save();
+        downloadPDF(pdfBytes, `page_${i+1}.pdf`);
+        
+        // 短暂延迟，避免浏览器被多个下载请求压垮
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      hideLoadingOverlay();
+      alert(`已成功将PDF拆分为${pageCount}个单页文档`);
+    } else {
+      // 自定义页面拆分
+      // 解析用户输入的页码（例如 "1,3,5-7"）
+      const pageRanges = splitMode.split(',').map(range => range.trim());
+      const selectedPages = [];
+      
+      for (const range of pageRanges) {
+        if (range.includes('-')) {
+          // 处理页面范围（例如 "5-7"）
+          const [start, end] = range.split('-').map(num => parseInt(num.trim(), 10) - 1);
+          for (let i = start; i <= end; i++) {
+            if (i >= 0 && i < pageCount) {
+              selectedPages.push(i);
+            }
+          }
+        } else {
+          // 处理单个页码
+          const pageNum = parseInt(range, 10) - 1;
+          if (pageNum >= 0 && pageNum < pageCount) {
+            selectedPages.push(pageNum);
+          }
+        }
+      }
+      
+      // 检查是否有有效页码
+      if (selectedPages.length === 0) {
+        hideLoadingOverlay();
+        alert(i18next.t('processing.invalidRange'));
+        return;
+      }
+      
+      // 创建新文档包含所选页面
+      const newPdfDoc = await PDFLib.PDFDocument.create();
+      
+      for (let i = 0; i < selectedPages.length; i++) {
+        // 更新加载进度
+        showLoadingOverlay(`${i18next.t('processing.splitting')} (${i+1}/${selectedPages.length})`);
+        
+        const pageIndex = selectedPages[i];
+        const [newPage] = await newPdfDoc.copyPages(pdfDoc, [pageIndex]);
+        newPdfDoc.addPage(newPage);
+      }
+      
+      // 保存并下载拆分后的PDF
+      const pdfBytes = await newPdfDoc.save();
+      downloadPDF(pdfBytes, 'split_custom.pdf');
+      
+      hideLoadingOverlay();
+      alert(`已成功提取${selectedPages.length}个页面`);
+    }
   } catch (error) {
+    hideLoadingOverlay();
     console.error('Error splitting PDF:', error);
     alert(i18next.t('processing.error') + error.message);
+  }
+}
+
+// 显示加载覆盖层
+function showLoadingOverlay(message) {
+  const overlay = document.getElementById('loading-overlay');
+  const loadingText = document.getElementById('loading-text');
+  
+  if (overlay && loadingText) {
+    loadingText.textContent = message || 'Processing...';
+    overlay.classList.remove('hidden');
+  }
+}
+
+// 隐藏加载覆盖层
+function hideLoadingOverlay() {
+  const overlay = document.getElementById('loading-overlay');
+  
+  if (overlay) {
+    overlay.classList.add('hidden');
+  }
+}
+
+// 格式化文件大小
+function formatFileSize(bytes) {
+  if (bytes < 1024) {
+    return bytes + ' bytes';
+  } else if (bytes < 1024 * 1024) {
+    return (bytes / 1024).toFixed(2) + ' KB';
+  } else {
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
   }
 }
 
@@ -693,22 +850,23 @@ function initializeShareFeature() {
     });
   }
   
-  // 处理所有分享按钮，包括悬浮按钮和底部社交图标
-  const allShareButtons = document.querySelectorAll('.share-button, .footer-share-button');
-  console.log('找到分享按钮数量:', allShareButtons.length);
+  // 查找并处理所有分享按钮
+  const floatingShareButtons = document.querySelectorAll('.share-button');
+  const footerShareButtons = document.querySelectorAll('.footer-share-button');
   
-  // 详细打印找到的按钮信息
-  allShareButtons.forEach((button, index) => {
+  console.log('找到悬浮分享按钮数量:', floatingShareButtons.length);
+  console.log('找到页脚分享按钮数量:', footerShareButtons.length);
+  
+  // 为悬浮分享按钮添加事件监听器
+  floatingShareButtons.forEach((button, index) => {
     const platform = button.getAttribute('data-platform');
-    const classes = button.className;
-    console.log(`按钮 ${index+1}: 平台=${platform}, 类名=${classes}`);
-  });
-  
-  allShareButtons.forEach(button => {
+    console.log(`悬浮按钮 ${index+1}: 平台=${platform || '未设置'}`);
+    
     button.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation(); // 阻止事件冒泡
       const platform = button.getAttribute('data-platform');
-      console.log('分享按钮被点击，平台:', platform);
+      console.log('悬浮分享按钮被点击，平台:', platform);
       if (platform) {
         shareContent(platform);
       } else {
@@ -717,13 +875,11 @@ function initializeShareFeature() {
     });
   });
   
-  // 专门处理页脚分享按钮
-  const footerShareButtons = document.querySelectorAll('.footer-share-button');
-  console.log('找到页脚分享按钮数量:', footerShareButtons.length);
-  
+  // 为页脚分享按钮添加事件监听器
   footerShareButtons.forEach((button, index) => {
-    console.log(`页脚按钮 ${index+1}: 平台=${button.getAttribute('data-platform')}`);
-    // 确保页脚按钮也有事件监听器
+    const platform = button.getAttribute('data-platform');
+    console.log(`页脚按钮 ${index+1}: 平台=${platform || '未设置'}`);
+    
     button.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation(); // 阻止事件冒泡
@@ -753,6 +909,22 @@ function initializeShareFeature() {
     console.warn('Download QR button not found');
   }
   
+  // 检查是否有问题的分享按钮
+  setTimeout(() => {
+    const allButtons = [...floatingShareButtons, ...footerShareButtons];
+    const nonFunctionalButtons = allButtons.filter(button => !button.getAttribute('data-platform'));
+    if (nonFunctionalButtons.length > 0) {
+      console.warn(`发现 ${nonFunctionalButtons.length} 个没有data-platform属性的分享按钮`);
+      nonFunctionalButtons.forEach((button, i) => {
+        console.warn(`有问题的按钮 ${i+1}:`, button.outerHTML);
+      });
+    }
+    
+    // 验证所有平台是否都支持
+    const platforms = new Set(Array.from(allButtons).map(btn => btn.getAttribute('data-platform')).filter(Boolean));
+    console.log('支持的分享平台:', Array.from(platforms).join(', '));
+  }, 1000);
+  
   // 分享内容
   function shareContent(platform) {
     console.log('执行分享到平台:', platform);
@@ -770,6 +942,22 @@ function initializeShareFeature() {
       case 'weibo':
         window.open(`http://service.weibo.com/share/share.php?url=${url}&title=${title}`, '_blank');
         break;
+      case 'facebook':
+        console.log('分享到Facebook:', url);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        break;
+      case 'twitter':
+        console.log('分享到Twitter:', url, title);
+        window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`, '_blank');
+        break;
+      case 'linkedin':
+        console.log('分享到LinkedIn:', url);
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+        break;
+      case 'pinterest':
+        console.log('分享到Pinterest:', url, title);
+        window.open(`https://pinterest.com/pin/create/button/?url=${url}&description=${title}`, '_blank');
+        break;
       case 'copy':
         navigator.clipboard.writeText(window.location.href)
           .then(() => {
@@ -778,16 +966,16 @@ function initializeShareFeature() {
               setTimeout(() => {
                 copySuccess.classList.add('hidden');
               }, 3000);
-            } else {
-              alert('链接已复制到剪贴板！');
             }
+            console.log('链接已复制到剪贴板:', window.location.href);
           })
           .catch(err => {
-            alert('复制失败: ' + err);
+            console.error('复制失败:', err);
+            alert('复制链接失败，请手动复制：' + window.location.href);
           });
         break;
       default:
-        console.warn(`未知的分享平台: ${platform}`);
+        console.warn('未知的分享平台:', platform);
     }
   }
   
