@@ -123,19 +123,13 @@
     <meta name="author" content="Zhu Yongchi">
     <!-- 添加favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230ea5e9'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM14 8V3.5L18.5 8H14zm2 11v-1a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1zm-6-5h4a1 1 0 0 0 0-2h-4a1 1 0 0 0 0 2zm-2-4h6a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2z'/></svg>">
-    
-    <!-- 添加必要的库 -->
-    <script src="https://unpkg.com/i18next@21.8.16/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector@7.0.1/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen">
     <!-- 顶部促销横幅 -->
     <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-2 px-4 text-center relative">
         <p class="font-medium">
             🎁 <span class="animate-pulse inline-block">限时优惠</span>: 免费用户文件大小上限提升至 <span class="font-bold underline">50MB</span>! 
-            <span class="hidden sm:inline">截止日期: 2025年5月15日。</span>
+            <span class="hidden sm:inline">截止日期: 2024年7月15日。</span>
             <a href="#pricing" class="ml-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-full text-sm transition">了解更多 →</a>
         </p>
     </div>
@@ -145,13 +139,13 @@
         <nav class="container mx-auto px-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="text-2xl font-bold gradient-text">PDF Pro</div>
+                <div class="text-2xl font-bold gradient-text">PDF Pro</div>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#features" class="text-gray-600 hover:text-primary-600" data-i18n="features">功能特点</a>
-                    <a href="#how-it-works" class="text-gray-600 hover:text-primary-600" data-i18n="howItWorks">如何工作</a>
-                    <a href="#pricing" class="text-gray-600 hover:text-primary-600" data-i18n="pricing">定价</a>
-                    <a href="#faq" class="text-gray-600 hover:text-primary-600" data-i18n="faq">常见问题</a>
+                    <a href="#features" class="text-gray-600 hover:text-primary-600">功能特点</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-primary-600">如何工作</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-primary-600">定价</a>
+                    <a href="#faq" class="text-gray-600 hover:text-primary-600">常见问题</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative group">
@@ -162,16 +156,16 @@
                             </svg>
                         </button>
                         <div id="language-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="en">English</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="en">英语</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="zh">中文</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="es">Español</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="fr">Français</a>
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="de">Deutsch</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="de">deutsch</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="ja">日本語</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="ko">한국어</a>
                         </div>
                     </div>
-                    <a href="#upload" class="btn-primary" data-i18n="getStarted">立即开始</a>
+                    <a href="#upload" class="btn-primary">立即开始</a>
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-primary-600" aria-label="Toggle menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +232,31 @@
                 </div>
             </div>
             
-            <a href="#upload" class="btn-primary text-lg px-8 py-3 rounded-lg">立即处理PDF</a>
+            <div id="upload" class="upload-area">
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">选择操作</label>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button class="flex-1 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition">压缩PDF</button>
+                        <button class="flex-1 bg-white border-2 border-primary-600 text-primary-600 px-6 py-3 rounded-lg hover:bg-primary-50 transition">拆分PDF</button>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <label for="pdf-upload" class="block text-gray-700 text-sm font-bold mb-2">上传您的PDF</label>
+                    <div id="upload-drop-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-primary-500 transition cursor-pointer">
+                        <input type="file" id="pdf-upload" class="hidden" accept=".pdf">
+                        <p class="text-gray-500">在此处拖放PDF或点击浏览</p>
+                        <p class="text-sm text-gray-400 mt-2">📣 <span class="text-green-600 font-semibold">限时优惠：</span> 最大文件大小：<span class="text-red-600 font-bold">50MB</span>（免费计划）</p>
+                        <button id="pdf-select-button" class="mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-bold shadow-md" onclick="document.getElementById('pdf-upload').click();">
+                            <span class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                                选择文件
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -357,7 +375,7 @@
             <div class="max-w-3xl mx-auto space-y-6">
                 <div class="bg-gray-50 p-6 rounded-lg">
                     <h3 class="font-bold text-lg mb-2">关于免费版50MB文件大小限制优惠</h3>
-                    <p class="text-gray-700">为了回馈用户，我们将免费版文件大小限制从5MB临时提升至50MB。此优惠将于2025年5月15日结束，之后将恢复至原来的5MB限制。</p>
+                    <p class="text-gray-700">为了回馈用户，我们将免费版文件大小限制从5MB临时提升至50MB。此优惠将于2024年7月15日结束，之后将恢复至原来的5MB限制。</p>
                 </div>
                 
                 <div class="bg-gray-50 p-6 rounded-lg">
@@ -397,18 +415,6 @@
             <!-- 微博分享 -->
             <button class="share-button bg-red-500 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition-all" data-platform="weibo">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 1024 1024" fill="currentColor"><path d="M851.4 590.193c-22.196-66.233-90.385-90.422-105.912-91.863-15.523-1.442-29.593-9.94-19.295-27.505 10.302-17.566 29.304-68.684-7.248-104.681-36.564-36.14-116.512-22.462-173.094 0.866-56.434 23.327-53.39 7.055-51.65-8.925 1.89-16.848 32.355-111.02-60.791-122.395C311.395 220.86 154.85 370.754 99.572 457.15 16 587.607 29.208 675.873 29.208 675.873h0.58c10.009 121.819 190.787 218.869 412.328 218.869 190.5 0 350.961-71.853 398.402-169.478 0 0 0.143-0.433 0.575-1.156 4.938-10.506 8.71-21.168 11.035-32.254 6.668-26.205 11.755-64.215-0.728-101.66z m-436.7 251.27c-157.71 0-285.674-84.095-285.674-187.768 0-103.671 127.82-187.76 285.674-187.76 157.705 0 285.673 84.089 285.673 187.76 0 103.815-127.968 187.768-285.673 187.768z"/><path d="M803.096 425.327c2.896 1.298 5.945 1.869 8.994 1.869 8.993 0 17.7-5.328 21.323-14.112 5.95-13.964 8.993-28.793 8.993-44.205 0-62.488-51.208-113.321-114.181-113.321-15.379 0-30.32 3.022-44.396 8.926-11.755 4.896-17.263 18.432-12.335 30.24 4.933 11.662 18.572 17.134 30.465 12.238 8.419-3.46 17.268-5.33 26.409-5.33 37.431 0 67.752 30.241 67.752 67.247 0 9.068-1.735 17.857-5.369 26.202-5.224 11.826 0.29 25.807 12.345 30.952zM726.451 114.181c-25.553 0-50.399 3.948-74.3 11.755-12.104 4.043-18.572 17.134-14.541 29.26 4.088 12.121 17.183 18.719 29.298 14.551 18.575-6.35 38.323-9.516 59.254-9.516 101.661 0 184.334 82.969 184.334 185.153 0 20.952-3.518 41.401-10.595 60.698-4.936 12.97 1.429 27.417 14.575 32.491 2.933 1.013 6.002 1.518 9.074 1.518 10.009 0 19.425-6.345 22.638-16.214 8.994-24.367 13.534-49.896 13.534-77.92-0.287-126.094-103.03-228.775-229.111-228.775z" /></svg>
-            </button>
-            <!-- Facebook分享 -->
-            <button class="share-button bg-blue-600 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all" data-platform="facebook">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
-            </button>
-            <!-- Twitter分享 -->
-            <button class="share-button bg-sky-500 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:bg-sky-600 transition-all" data-platform="twitter">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
-            </button>
-            <!-- LinkedIn分享 -->
-            <button class="share-button bg-blue-700 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-800 transition-all" data-platform="linkedin">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
             </button>
             <!-- 复制链接 -->
             <button class="share-button bg-gray-700 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-800 transition-all" data-platform="copy">
@@ -467,21 +473,15 @@
                 <div>
                     <h4 class="font-bold mb-4">关注我们</h4>
                     <div class="flex space-x-3">
-                        <a href="javascript:void(0)" class="footer-share-button text-gray-400 hover:text-white" data-platform="wechat">
+                        <a href="#" class="text-gray-400 hover:text-white">
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8.113 10.406c-.268 0-.484-.213-.484-.475s.217-.476.484-.476c.269 0 .484.213.484.476 0 .262-.216.475-.484.475m8.357 0c-.268 0-.484-.213-.484-.475s.217-.476.484-.476c.268 0 .484.213.484.476 0 .262-.216.475-.484.475m-7.271 3.031l-.684 1.025c-.187.277-.513.41-.843.306-.329-.105-.479-.42-.329-.691l.66-.963c.329 0 .696.038 1.196.323m8.312-7.436c-4.871 0-8.835 3.241-8.835 7.22 0 2.138 1.079 4.044 2.779 5.36l-.61 1.792 2.143-.666c.762.199 1.566.326 2.402.326 4.873 0 8.836-3.242 8.836-7.219 0-3.98-3.964-7.813-8.836-7.813m0 13.246c-.84 0-1.656-.138-2.432-.36l-2.373.717.666-1.985c-1.552-1.306-2.549-3.178-2.549-5.284 0-3.908 3.783-7.082 8.457-7.082 4.683 0 8.835 3.174 8.835 7.082 0 3.907-3.959 6.912-8.604 6.912m-8.45-12.959c-6.022 0-10.918 4.024-10.918 8.959 0 2.648 1.339 5.037 3.441 6.699l-.717 2.237 2.644-.837c.961.248 1.969.414 3.017.414 6.022 0 10.918-4.023 10.918-8.958 0-4.934-4.896-8.514-10.918-8.514m0 16.22c-1.012 0-2.007-.158-2.927-.43l-2.882.852.805-2.368c-1.882-1.568-3.075-3.823-3.075-6.3 0-4.751 4.632-8.599 10.44-8.599 5.808 0 10.918 3.847 10.918 8.599 0 4.751-4.896 8.246-10.44 8.246"/></svg>
                         </a>
-                        <a href="javascript:void(0)" class="footer-share-button text-gray-400 hover:text-white" data-platform="qq">
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.987 0C5.373 0 0 5.373 0 11.987c0 6.627 5.373 12 11.987 12 6.627 0 12-5.373 12-12C24 5.373 18.614.013 11.987 0zm4.92 15.787c-.327.961-1.852.667-2.667 1.64-.773.906.04 2.667-2.293 2.307-2.347-.38-3.334-1.747-2.667-2.307.667-.547 1.32.107 1.32.107s.108-.32-.132-.587c-.227-.254-.961.307-.961-.667 0-.573.773-.423.773-.423.053-.627-.327-.96-.327-1.16 0-.107.053-.213.16-.266.666-.107 1.64 1.32 1.64 1.32s.106-.547 0-.854c-.107-.293-.694-1.507.213-2.347 0 0 .96 1.507 3.067 1.574 2.107.066 2.667-1.574 2.667-1.574.907.84.32 2.054.213 2.347-.107.307 0 .854 0 .854s.974-1.427 1.64-1.32c.107.053.16.159.16.266 0 .214-.373.534-.32 1.16 0 0 .773-.16.773.423 0 .974-.747.414-.96.667-.227.266-.133.587-.133.587s.66-.654 1.32-.107c.654.56-.334 1.927-2.667 2.307-2.347.373-1.56-1.387-2.294-2.307-.827-.973-2.347-.666-2.667-1.64-.187-.56.347-1.24 1.147-2.773.8-1.574.4-2.604.4-2.627.08-.213 0-.373-.08-.48-.307-.413-1.027-.16-1.027-.16s0-.867.453-1.4c.48-.547 1.267-.56 1.267-.56s-.026-.76-.186-1.16c-.16-.413-.374-.627-.16-1.507.533-2.32 3.854-3.84 3.854-3.84s3.32 1.52 3.853 3.84c.214.88 0 1.093-.16 1.507-.16.4-.186 1.16-.186 1.16s.8.013 1.266.56c.454.533.454 1.4.454 1.4s-.707-.253-1.027.16c-.8.106-.16.266-.8.48 0 .066-.387 1.066.413 2.627.773 1.533 1.347 2.213 1.133 2.773z"/></svg>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.987 0C5.373 0 0 5.373 0 11.987c0 6.627 5.373 12 11.987 12 6.627 0 12-5.373 12-12C24 5.373 18.614.013 11.987 0zm4.92 15.787c-.327.961-1.852.667-2.667 1.64-.773.906.04 2.667-2.293 2.307-2.347-.38-3.334-1.747-2.667-2.307.667-.547 1.32.107 1.32.107s.108-.32-.132-.587c-.227-.254-.961.307-.961-.667 0-.573.773-.423.773-.423.053-.627-.327-.96-.327-1.16 0-.107.053-.213.16-.266.666-.107 1.64 1.32 1.64 1.32s.106-.547 0-.854c-.107-.293-.694-1.507.213-2.347 0 0 .96 1.507 3.067 1.574 2.107.066 2.667-1.574 2.667-1.574.907.84.32 2.054.213 2.347-.107.307 0 .854 0 .854s.974-1.427 1.64-1.32c.107.053.16.159.16.266 0 .214-.373.534-.32 1.16 0 0 .773-.16.773.423 0 .974-.747.414-.96.667-.227.266-.133.587-.133.587s.66-.654 1.32-.107c.654.56-.334 1.927-2.667 2.307-2.347.373-1.56-1.387-2.294-2.307-.827-.973-2.347-.666-2.667-1.64-.187-.56.347-1.24 1.147-2.773.8-1.574.4-2.604.4-2.627.08-.213 0-.373-.08-.48-.307-.413-1.027-.16-1.027-.16s0-.867.453-1.4c.48-.547 1.267-.56 1.267-.56s-.026-.76-.186-1.16c-.16-.413-.374-.627-.16-1.507.533-2.32 3.854-3.84 3.854-3.84s3.32 1.52 3.853 3.84c.214.88 0 1.093-.16 1.507-.16.4-.186 1.16-.186 1.16s.8.013 1.266.56c.454.533.454 1.4.454 1.4s-.707-.253-1.027.16c-.8.106-.16.266-.8.48 0 .066-.387 1.066.413 2.627.773 1.533 1.347 2.213 1.133 2.773z"/></svg>
                         </a>
-                        <a href="javascript:void(0)" class="footer-share-button text-gray-400 hover:text-white" data-platform="weibo">
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 1024 1024" fill="currentColor"><path d="M851.4 590.193c-22.196-66.233-90.385-90.422-105.912-91.863-15.523-1.442-29.593-9.94-19.295-27.505 10.302-17.566 29.304-68.684-7.248-104.681-36.564-36.14-116.512-22.462-173.094 0.866-56.434 23.327-53.39 7.055-51.65-8.925 1.89-16.848 32.355-111.02-60.791-122.395C311.395 220.86 154.85 370.754 99.572 457.15 16 587.607 29.208 675.873 29.208 675.873h0.58c10.009 121.819 190.787 218.869 412.328 218.869 190.5 0 350.961-71.853 398.402-169.478 0 0 0.143-0.433 0.575-1.156 4.938-10.506 8.71-21.168 11.035-32.254 6.668-26.205 11.755-64.215-0.728-101.66z m-436.7 251.27c-157.71 0-285.674-84.095-285.674-187.768 0-103.671 127.82-187.76 285.674-187.76 157.705 0 285.673 84.089 285.673 187.76 0 103.815-127.968 187.768-285.673 187.768z"/><path d="M803.096 425.327c2.896 1.298 5.945 1.869 8.994 1.869 8.993 0 17.7-5.328 21.323-14.112 5.95-13.964 8.993-28.793 8.993-44.205 0-62.488-51.208-113.321-114.181-113.321-15.379 0-30.32 3.022-44.396 8.926-11.755 4.896-17.263 18.432-12.335 30.24 4.933 11.662 18.572 17.134 30.465 12.238 8.419-3.46 17.268-5.33 26.409-5.33 37.431 0 67.752 30.241 67.752 67.247 0 9.068-1.735 17.857-5.369 26.202-5.224 11.826 0.29 25.807 12.345 30.952zM726.451 114.181c-25.553 0-50.399 3.948-74.3 11.755-12.104 4.043-18.572 17.134-14.541 29.26 4.088 12.121 17.183 18.719 29.298 14.551 18.575-6.35 38.323-9.516 59.254-9.516 101.661 0 184.334 82.969 184.334 185.153 0 20.952-3.518 41.401-10.595 60.698-4.936 12.97 1.429 27.417 14.575 32.491 2.933 1.013 6.002 1.518 9.074 1.518 10.009 0 19.425-6.345 22.638-16.214 8.994-24.367 13.534-49.896 13.534-77.92-0.287-126.094-103.03-228.775-229.111-228.775z" /></svg>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="currentColor"><path d="M851.4 590.193c-22.196-66.233-90.385-90.422-105.912-91.863-15.523-1.442-29.593-9.94-19.295-27.505 10.302-17.566 29.304-68.684-7.248-104.681-36.564-36.14-116.512-22.462-173.094 0.866-56.434 23.327-53.39 7.055-51.65-8.925 1.89-16.848 32.355-111.02-60.791-122.395C311.395 220.86 154.85 370.754 99.572 457.15 16 587.607 29.208 675.873 29.208 675.873h0.58c10.009 121.819 190.787 218.869 412.328 218.869 190.5 0 350.961-71.853 398.402-169.478 0 0 0.143-0.433 0.575-1.156 4.938-10.506 8.71-21.168 11.035-32.254 6.668-26.205 11.755-64.215-0.728-101.66z m-436.7 251.27c-157.71 0-285.674-84.095-285.674-187.768 0-103.671 127.82-187.76 285.674-187.76 157.705 0 285.673 84.089 285.673 187.76 0 103.815-127.968 187.768-285.673 187.768z"/><path d="M803.096 425.327c2.896 1.298 5.945 1.869 8.994 1.869 8.993 0 17.7-5.328 21.323-14.112 5.95-13.964 8.993-28.793 8.993-44.205 0-62.488-51.208-113.321-114.181-113.321-15.379 0-30.32 3.022-44.396 8.926-11.755 4.896-17.263 18.432-12.335 30.24 4.933 11.662 18.572 17.134 30.465 12.238 8.419-3.46 17.268-5.33 26.409-5.33 37.431 0 67.752 30.241 67.752 67.247 0 9.068-1.735 17.857-5.369 26.202-5.224 11.826 0.29 25.807 12.345 30.952zM726.451 114.181c-25.553 0-50.399 3.948-74.3 11.755-12.104 4.043-18.572 17.134-14.541 29.26 4.088 12.121 17.183 18.719 29.298 14.551 18.575-6.35 38.323-9.516 59.254-9.516 101.661 0 184.334 82.969 184.334 185.153 0 20.952-3.518 41.401-10.595 60.698-4.936 12.97 1.429 27.417 14.575 32.491 2.933 1.013 6.002 1.518 9.074 1.518 10.009 0 19.425-6.345 22.638-16.214 8.994-24.367 13.534-49.896 13.534-77.92-0.287-126.094-103.03-228.775-229.111-228.775z" /></svg>
                         </a>
-                        <a href="javascript:void(0)" class="footer-share-button text-gray-400 hover:text-white" data-platform="copy">
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-                            </svg>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -491,73 +491,151 @@
         </div>
     </footer>
 
-    <!-- 加载覆盖层 -->
-    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-md w-full mx-4">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-            <p id="loading-text" class="text-lg font-medium mb-2">处理中...</p>
-            
-            <!-- 进度条容器 -->
-            <div id="progress-container" class="w-full bg-gray-200 rounded-full h-2.5 my-3 hidden">
-                <div id="progress-bar" class="bg-primary-600 h-2.5 rounded-full" style="width: 0%"></div>
-            </div>
-            <p id="progress-text" class="text-sm font-medium text-primary-600 mb-2 hidden">0%</p>
-            
-            <p class="text-sm text-gray-500">请不要关闭此窗口，文件正在本地处理</p>
+    <!-- 加载指示器模板 -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p id="loading-text" class="text-gray-700">Processing your file...</p>
         </div>
     </div>
 
-    <!-- 压缩结果显示区域 -->
-    <div id="compression-result" class="container mx-auto px-4 mt-6 mb-12 max-w-2xl hidden"></div>
-
-    <!-- 主要操作区域 -->
-    <section id="upload" class="container mx-auto mt-8 px-4 py-8">
-      <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
-        <h2 class="text-2xl font-bold text-center mb-6">处理您的PDF文件</h2>
-        
-        <!-- 工具栏 按钮 -->
-        <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">选择操作</label>
-          <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <button id="compress-btn" class="operation-btn flex-1 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition" data-operation="compress">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-              压缩PDF
+    <!-- 调试信息显示区域 -->
+    <div id="debug-panel" class="fixed bottom-0 left-0 bg-black bg-opacity-70 text-white p-4 max-w-lg max-h-48 overflow-auto z-50 text-xs" style="display: none;">
+        <div class="flex justify-between mb-2">
+            <h3 class="font-bold">调试面板</h3>
+            <button id="toggle-debug" class="text-xs px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded">
+                隐藏
             </button>
-            <button id="split-btn" class="operation-btn flex-1 bg-white border-2 border-primary-600 text-primary-600 px-6 py-3 rounded-lg hover:bg-primary-50 transition" data-operation="split">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              拆分PDF
-            </button>
-          </div>
         </div>
-        
-        <!-- 上传区域 -->
-        <div class="text-center">
-          <label for="pdf-upload" class="block text-gray-700 text-sm font-bold mb-2">上传您的PDF文件</label>
-          <div id="upload-drop-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-primary-500 transition cursor-pointer">
-            <input type="file" id="pdf-upload" class="hidden" accept="application/pdf">
-            <p class="text-gray-500">拖放您的PDF文件到这里或点击选择文件</p>
-            <p class="text-sm text-gray-400 mt-2">
-              📣 <span class="text-green-600 font-semibold">限时优惠：</span> 
-              最大文件大小：<span class="text-red-600 font-bold">50MB</span>（免费计划）
-            </p>
-            <button id="pdf-select-button" class="mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-bold shadow-md">
-              <span class="flex items-center justify-center">
-                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        <div id="debug-messages"></div>
+    </div>
+
+    <div id="processing-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+            <div class="text-center">
+                <svg class="animate-spin h-12 w-12 text-primary-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                选择文件
-              </span>
-            </button>
-          </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">正在处理您的PDF</h3>
+                <p class="text-gray-600 mb-4">请稍候，我们正在处理您的文件...</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-primary-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+                <p class="mt-2 text-sm text-gray-500"><span id="progress-text">0%</span> 完成</p>
+            </div>
         </div>
-      </div>
-    </section>
+    </div>
 
-    <!-- 自定义脚本（放在最后加载） -->
-    <script src="main.js"></script>
+    <!-- pdf-lib CDN引用 -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+    <script type="module" src="main.js"></script>
+    
+    <!-- 移动菜单脚本 -->
+    <script>
+        // 启动倒计时
+        function startCountdown() {
+            // 更新倒计时结束日期为2024年7月15日
+            const endDate = new Date('2024-07-15T23:59:59');
+            const countdownEl = document.getElementById('countdown-timer');
+            
+            if (!countdownEl) return;
+            
+            function updateCountdown() {
+                const now = new Date();
+                const diff = endDate - now;
+                
+                if (diff <= 0) {
+                    countdownEl.textContent = '已结束';
+                    return;
+                }
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                countdownEl.textContent = `${days}天${hours.toString().padStart(2, '0')}时${minutes.toString().padStart(2, '0')}分${seconds.toString().padStart(2, '0')}秒`;
+            }
+            
+            // 立即更新一次
+            updateCountdown();
+            
+            // 每秒更新一次
+            return setInterval(updateCountdown, 1000);
+        }
+        
+        // 移动菜单逻辑
+        function initMobileMenu() {
+            const toggleButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const closeButton = document.getElementById('close-mobile-menu');
+            
+            if (toggleButton && mobileMenu) {
+                toggleButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                    document.body.classList.toggle('overflow-hidden');
+                });
+                
+                if (closeButton) {
+                    closeButton.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                        document.body.classList.remove('overflow-hidden');
+                    });
+                }
+                
+                // 关闭菜单的点击
+                const menuLinks = mobileMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                        document.body.classList.remove('overflow-hidden');
+                    });
+                });
+                
+                // 语言切换
+                const langButtons = mobileMenu.querySelectorAll('[data-lang]');
+                langButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const lang = this.getAttribute('data-lang');
+                        // 更改语言逻辑（如果需要实现）
+                        
+                        // 更新按钮样式
+                        langButtons.forEach(btn => {
+                            btn.classList.remove('bg-primary-600', 'text-white');
+                            btn.classList.add('bg-gray-200', 'text-gray-700');
+                        });
+                        this.classList.remove('bg-gray-200', 'text-gray-700');
+                        this.classList.add('bg-primary-600', 'text-white');
+                    });
+                });
+            }
+        }
+        
+        // 文档加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保倒计时正常启动
+            const countdownTimer = startCountdown();
+            
+            // 初始化菜单
+            initMobileMenu();
+            
+            // 手动检查倒计时是否正常运行，如果没有则重新启动
+            setTimeout(function() {
+                const countdownEl = document.getElementById('countdown-timer');
+                if (countdownEl && countdownEl.textContent === '已结束') {
+                    // 检查当前日期是否真的过了结束日期
+                    const endDate = new Date('2024-07-15T23:59:59');
+                    const now = new Date();
+                    if (now < endDate) {
+                        // 如果没有过期但显示已结束，则重启倒计时
+                        clearInterval(countdownTimer);
+                        startCountdown();
+                    }
+                }
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
