@@ -123,6 +123,11 @@
     <meta name="author" content="Zhu Yongchi">
     <!-- 添加favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230ea5e9'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM14 8V3.5L18.5 8H14zm2 11v-1a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1zm-6-5h4a1 1 0 0 0 0-2h-4a1 1 0 0 0 0 2zm-2-4h6a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2z'/></svg>">
+    
+    <!-- 添加必要的库 -->
+    <script src="https://unpkg.com/i18next@21.8.16/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen">
     <!-- 顶部促销横幅 -->
@@ -836,106 +841,71 @@
         });
     </script>
 
-    <!-- 在body标签结束前添加 -->
-    <!-- 加载遮罩层 -->
+    <!-- 更新加载覆盖层，添加进度条 -->
     <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-md w-full mx-4">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
             <p id="loading-text" class="text-lg font-medium mb-2">处理中...</p>
+            
+            <!-- 进度条容器 -->
+            <div id="progress-container" class="w-full bg-gray-200 rounded-full h-2.5 my-3 hidden">
+                <div id="progress-bar" class="bg-primary-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" class="text-sm font-medium text-primary-600 mb-2 hidden">0%</p>
+            
             <p class="text-sm text-gray-500">请不要关闭此窗口，文件正在本地处理</p>
         </div>
     </div>
 
-    <!-- 在</body>标签前添加的调试代码 -->
-    <script>
-      // 调试文件上传功能
-      document.addEventListener('DOMContentLoaded', function() {
-        console.log('页面加载完成，调试文件上传...');
+    <!-- 添加压缩结果显示区域 -->
+    <div id="compression-result" class="container mx-auto px-4 mt-6 mb-12 max-w-2xl hidden"></div>
+
+    <!-- 主要操作区域 -->
+    <section id="upload" class="container mx-auto mt-8 px-4 py-8">
+      <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold text-center mb-6">处理您的PDF文件</h2>
         
-        const fileInput = document.getElementById('pdf-upload');
-        const uploadButton = document.getElementById('pdf-select-button');
-        const uploadDropArea = document.getElementById('upload-drop-area');
+        <!-- 工具栏 按钮 -->
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">选择操作</label>
+          <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <button id="compress-btn" class="operation-btn flex-1 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition" data-operation="compress">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+              压缩PDF
+            </button>
+            <button id="split-btn" class="operation-btn flex-1 bg-white border-2 border-primary-600 text-primary-600 px-6 py-3 rounded-lg hover:bg-primary-50 transition" data-operation="split">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              拆分PDF
+            </button>
+          </div>
+        </div>
         
-        console.log('文件输入元素:', fileInput ? '已找到' : '未找到');
-        console.log('上传按钮:', uploadButton ? '已找到' : '未找到');
-        console.log('拖放区域:', uploadDropArea ? '已找到' : '未找到');
-        
-        if (fileInput) {
-          console.log('文件输入属性:', {
-            id: fileInput.id,
-            type: fileInput.type,
-            accept: fileInput.accept,
-            classList: fileInput.className
-          });
-          
-          // 直接为文件输入添加事件监听器
-          fileInput.addEventListener('change', function(e) {
-            console.log('文件输入变化事件触发');
-            if (fileInput.files && fileInput.files.length > 0) {
-              const file = fileInput.files[0];
-              console.log('选择的文件:', {
-                name: file.name,
-                type: file.type,
-                size: file.size
-              });
-            } else {
-              console.log('未选择文件');
-            }
-          });
-        }
-        
-        if (uploadButton) {
-          uploadButton.addEventListener('click', function(e) {
-            console.log('上传按钮点击');
-            e.preventDefault();
-            e.stopPropagation();
-            if (fileInput) {
-              console.log('触发文件选择');
-              fileInput.click();
-            } else {
-              console.error('找不到文件输入元素，无法触发上传');
-            }
-          });
-        }
-        
-        if (uploadDropArea) {
-          uploadDropArea.addEventListener('dragover', function(e) {
-            console.log('拖拽经过上传区域');
-            e.preventDefault();
-            uploadDropArea.classList.add('border-primary-500');
-          });
-          
-          uploadDropArea.addEventListener('dragleave', function() {
-            console.log('拖拽离开上传区域');
-            uploadDropArea.classList.remove('border-primary-500');
-          });
-          
-          uploadDropArea.addEventListener('drop', function(e) {
-            console.log('文件拖放到上传区域');
-            e.preventDefault();
-            uploadDropArea.classList.remove('border-primary-500');
-            
-            if (e.dataTransfer.files.length) {
-              const file = e.dataTransfer.files[0];
-              console.log('拖放的文件:', {
-                name: file.name,
-                type: file.type,
-                size: file.size
-              });
-              
-              if (fileInput) {
-                fileInput.files = e.dataTransfer.files;
-                console.log('文件已分配给文件输入');
-                
-                // 手动触发change事件
-                const event = new Event('change', { bubbles: true });
-                fileInput.dispatchEvent(event);
-                console.log('手动触发change事件');
-              }
-            }
-          });
-        }
-      });
-    </script>
+        <!-- 上传区域 -->
+        <div class="text-center">
+          <label for="pdf-upload" class="block text-gray-700 text-sm font-bold mb-2">上传您的PDF文件</label>
+          <div id="upload-drop-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-primary-500 transition cursor-pointer">
+            <input type="file" id="pdf-upload" class="hidden" accept="application/pdf">
+            <p class="text-gray-500">拖放您的PDF文件到这里或点击选择文件</p>
+            <p class="text-sm text-gray-400 mt-2">
+              📣 <span class="text-green-600 font-semibold">限时优惠：</span> 
+              最大文件大小：<span class="text-red-600 font-bold">50MB</span>（免费计划）
+            </p>
+            <button id="pdf-select-button" class="mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-bold shadow-md">
+              <span class="flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                选择文件
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="main.js"></script>
 </body>
 </html>

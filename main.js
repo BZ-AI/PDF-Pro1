@@ -161,7 +161,17 @@ i18next
             splitting: 'Splitting your PDF...',
             addingWatermark: 'Adding watermark...',
             preparingDownload: 'Preparing your download...',
-            loadingPdf: 'Loading PDF...'
+            loadingPdf: 'Loading PDF...',
+            compressionComplete: 'Compression Complete',
+            savedSpace: 'Saved Space: {percentage}%',
+            compressionError: 'Compression Error: ',
+            finalizing: 'Finalizing...',
+            splitConfirm: 'Split PDF into {count} pages?',
+            splitCanceled: 'Split canceled.',
+            splitPrompt: 'Enter page ranges (comma-separated, e.g., 1,3-5,7)',
+            splitComplete: 'Split complete. {count} pages split.',
+            splitError: 'Split Error: ',
+            creatingZip: 'Creating ZIP file...'
           },
           payment: {
             upgradeTitle: 'Upgrade Your Plan',
@@ -322,7 +332,17 @@ i18next
             splitting: '正在拆分您的PDF...',
             addingWatermark: '正在添加水印...',
             preparingDownload: '正在准备下载...',
-            loadingPdf: '正在加载PDF...'
+            loadingPdf: '正在加载PDF...',
+            compressionComplete: '压缩完成',
+            savedSpace: '节省空间：{percentage}%',
+            compressionError: '压缩错误：',
+            finalizing: '正在完成...',
+            splitConfirm: '拆分PDF为{count}页？',
+            splitCanceled: '拆分取消。',
+            splitPrompt: '输入页面范围（用逗号分隔，例如1,3-5,7）',
+            splitComplete: '拆分完成。{count}页拆分。',
+            splitError: '拆分错误：',
+            creatingZip: '正在创建ZIP文件...'
           },
           payment: {
             upgradeTitle: '升级您的计划',
@@ -530,6 +550,60 @@ function initializeLanguageSwitcher() {
   });
 }
 
+// 显示加载覆盖层
+function showLoadingOverlay(message, progress = -1) {
+  const overlay = document.getElementById('loading-overlay');
+  const loadingText = document.getElementById('loading-text');
+  const progressContainer = document.getElementById('progress-container');
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  
+  if (!overlay) return;
+  
+  if (loadingText) {
+    loadingText.textContent = message || 'Processing...';
+  }
+  
+  // 处理进度条显示
+  if (progress >= 0 && progress <= 100 && progressContainer && progressBar && progressText) {
+    // 显示进度条
+    progressContainer.classList.remove('hidden');
+    progressText.classList.remove('hidden');
+    
+    // 更新进度条
+    progressBar.style.width = `${progress}%`;
+    progressText.textContent = `${Math.round(progress)}%`;
+  } else if (progressContainer && progressText) {
+    // 隐藏进度条（用于不确定进度的操作）
+    progressContainer.classList.add('hidden');
+    progressText.classList.add('hidden');
+  }
+  
+  overlay.classList.remove('hidden');
+}
+
+// 隐藏加载覆盖层
+function hideLoadingOverlay() {
+  const overlay = document.getElementById('loading-overlay');
+  const progressContainer = document.getElementById('progress-container');
+  const progressText = document.getElementById('progress-text');
+  
+  if (overlay) {
+    overlay.classList.add('hidden');
+  }
+  
+  // 重置进度条
+  if (progressContainer && progressText) {
+    progressContainer.classList.add('hidden');
+    progressText.classList.add('hidden');
+    
+    const progressBar = document.getElementById('progress-bar');
+    if (progressBar) {
+      progressBar.style.width = '0%';
+    }
+  }
+}
+
 // 处理文件上传
 async function handleFileUpload(file) {
   if (!file) {
@@ -567,14 +641,15 @@ async function handleFileUpload(file) {
     return;
   }
   
-  // 显示加载遮罩层
-  showLoadingOverlay(i18next.t('processing.loadingPdf'));
+  // 显示加载遮罩层，显示上传进度0%
+  showLoadingOverlay(i18next.t('processing.loadingPdf'), 0);
   
-  // 继续处理文件
+  // 使用FileReader带进度显示读取文件
   try {
     console.log('开始处理文件...');
-    // 读取文件为ArrayBuffer
-    const arrayBuffer = await file.arrayBuffer();
+    
+    // 使用Promise包装FileReader以支持进度
+    const arrayBuffer = await readFileWithProgress(file);
     console.log('文件已读取为ArrayBuffer, 大小:', arrayBuffer.byteLength);
     
     // 确保当前操作类型已设置，默认为压缩
@@ -600,194 +675,276 @@ async function handleFileUpload(file) {
   }
 }
 
+// 使用FileReader读取文件并显示进度
+function readFileWithProgress(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    // 进度事件处理
+    reader.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const progress = (event.loaded / event.total) * 100;
+        showLoadingOverlay(i18next.t('processing.loadingPdf'), progress);
+      }
+    };
+    
+    // 完成事件处理
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    
+    // 错误处理
+    reader.onerror = () => {
+      reject(new Error('文件读取失败'));
+    };
+    
+    // 开始读取文件
+    reader.readAsArrayBuffer(file);
+  });
+}
+
 // 压缩PDF（实际实现）
 async function compressPDF(arrayBuffer) {
   try {
-    // 显示处理加载中
-    showLoadingOverlay(i18next.t('processing.compressing'));
+    showLoadingOverlay(i18next.t('processing.compressing'), 10);
+    console.log('开始压缩PDF...');
     
-    // 1. 加载PDF文档
+    // 加载PDF文档
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
     
-    // 获取原始文件大小
-    const originalSize = arrayBuffer.byteLength;
+    showLoadingOverlay(i18next.t('processing.compressing'), 40);
     
-    // 2. 应用压缩算法
-    // PDF-LIB不直接支持高级压缩，但我们可以进行一些基本优化
-    const pages = pdfDoc.getPages();
+    // 创建用于保存压缩后的PDF的新文档
+    const compressedPdfDoc = await PDFLib.PDFDocument.create();
     
-    // 创建一个新的PDF文档
-    const newPdfDoc = await PDFLib.PDFDocument.create();
+    // 获取原始PDF的页数
+    const pageCount = pdfDoc.getPageCount();
     
-    // 复制所有页面到新文档
-    for (let i = 0; i < pages.length; i++) {
-      // 显示进度
-      showLoadingOverlay(`${i18next.t('processing.compressing')} (${i+1}/${pages.length})`);
+    // 复制所有页到新文档
+    for (let i = 0; i < pageCount; i++) {
+      // 更新进度：40% + 占总进度50%的复制页面进度
+      const progress = 40 + Math.round((i / pageCount) * 50);
+      showLoadingOverlay(i18next.t('processing.compressing'), progress);
       
-      // 从原始文档复制页面
-      const [newPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
-      newPdfDoc.addPage(newPage);
+      const [copiedPage] = await compressedPdfDoc.copyPages(pdfDoc, [i]);
+      compressedPdfDoc.addPage(copiedPage);
     }
     
-    // 3. 保存结果
-    // 使用较低质量设置保存PDF以减小大小
-    const pdfBytes = await newPdfDoc.save({
+    // 设置压缩选项
+    const compressOptions = {
       useObjectStreams: true,
-      addDefaultPage: false,
       useCompression: true
-    });
+    };
     
-    // 获取压缩后大小
-    const compressedSize = pdfBytes.byteLength;
+    showLoadingOverlay(i18next.t('processing.finalizing'), 90);
     
-    // 显示压缩结果
-    hideLoadingOverlay();
-    
-    // 计算节省的空间百分比
-    const savedPercentage = Math.round(((originalSize - compressedSize) / originalSize) * 100);
+    // 保存压缩后的PDF
+    const compressedPdfBytes = await compressedPdfDoc.save(compressOptions);
     
     // 显示压缩报告
-    alert(`
-      ${i18next.t('processing.compressionReport')}:
-      ${i18next.t('processing.originalSize')}: ${formatFileSize(originalSize)}
-      ${i18next.t('processing.compressedSize')}: ${formatFileSize(compressedSize)}
-      ${i18next.t('processing.spaceSaved')}: ${savedPercentage}%
-    `);
+    showCompressionReport(arrayBuffer.byteLength, compressedPdfBytes.byteLength);
     
-    // 下载压缩后的PDF
-    downloadPDF(pdfBytes, 'compressed.pdf');
-  } catch (error) {
+    // 隐藏加载遮罩层
     hideLoadingOverlay();
-    console.error('Error compressing PDF:', error);
-    alert(i18next.t('processing.error') + error.message);
+    
+    // 创建下载链接
+    downloadPDF(compressedPdfBytes, 'compressed.pdf');
+    
+  } catch (error) {
+    console.error('压缩PDF时出错:', error);
+    hideLoadingOverlay();
+    alert(i18next.t('processing.compressionError') + error.message);
+  }
+}
+
+// 显示压缩报告
+function showCompressionReport(originalSize, compressedSize) {
+  const savedPercentage = Math.round(((originalSize - compressedSize) / originalSize) * 100);
+  const originalSizeFormatted = formatFileSize(originalSize);
+  const compressedSizeFormatted = formatFileSize(compressedSize);
+  
+  // 显示结果
+  const resultElement = document.getElementById('compression-result');
+  if (resultElement) {
+    // 创建结果HTML
+    resultElement.innerHTML = `
+      <div class="p-4 bg-green-50 border border-green-200 rounded-lg mb-4">
+        <h3 class="text-lg font-semibold text-green-800 mb-2">${i18next.t('processing.compressionComplete')}</h3>
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <div>
+            <p class="text-sm text-gray-600">${i18next.t('processing.originalSize')}</p>
+            <p class="font-medium">${originalSizeFormatted}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">${i18next.t('processing.compressedSize')}</p>
+            <p class="font-medium">${compressedSizeFormatted}</p>
+          </div>
+        </div>
+        <div class="bg-gray-200 rounded-full h-2.5 mb-2">
+          <div class="bg-green-600 h-2.5 rounded-full" style="width: ${savedPercentage}%"></div>
+        </div>
+        <p class="text-center text-green-700 font-medium">
+          ${i18next.t('processing.savedSpace', { percentage: savedPercentage })}
+        </p>
+      </div>
+    `;
+    resultElement.classList.remove('hidden');
   }
 }
 
 // 拆分PDF（实际实现）
 async function splitPDF(arrayBuffer) {
   try {
-    // 显示处理加载中
-    showLoadingOverlay(i18next.t('processing.splitting'));
+    showLoadingOverlay(i18next.t('processing.splitting'), 10);
+    console.log('开始拆分PDF...');
     
-    // 1. 加载PDF文档
+    // 加载PDF文档
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-    const pages = pdfDoc.getPages();
-    const pageCount = pages.length;
     
-    // 询问用户的拆分方式
-    const splitMode = prompt(`
-      ${i18next.t('processing.splitMode')}:
-      1. ${i18next.t('processing.splitAllPages')}
-      2. ${i18next.t('processing.customSplit')}
-      
-      ${i18next.t('processing.enterPagesCustom')} (1-${pageCount})
-    `, '1');
+    // 获取PDF页数
+    const pageCount = pdfDoc.getPageCount();
+    console.log(`PDF共有${pageCount}页`);
     
-    // 如果用户取消，则退出
-    if (splitMode === null) {
-      hideLoadingOverlay();
-      return;
-    }
+    showLoadingOverlay(i18next.t('processing.splitting'), 30);
     
-    // 处理拆分模式
-    if (splitMode === '1') {
-      // 拆分所有页面
-      for (let i = 0; i < pageCount; i++) {
-        // 更新加载进度
-        showLoadingOverlay(`${i18next.t('processing.splitting')} (${i+1}/${pageCount})`);
-        
-        // 创建新文档
-        const newPdfDoc = await PDFLib.PDFDocument.create();
-        
-        // 复制单个页面
-        const [newPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
-        newPdfDoc.addPage(newPage);
-        
-        // 保存并下载这个单页PDF
-        const pdfBytes = await newPdfDoc.save();
-        downloadPDF(pdfBytes, `page_${i+1}.pdf`);
-        
-        // 短暂延迟，避免浏览器被多个下载请求压垮
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
+    // 询问用户希望如何拆分PDF
+    let splitOption = confirm(i18next.t('processing.splitConfirm', { count: pageCount })) ? 'custom' : 'all';
+    let pageRanges = [];
+    
+    if (splitOption === 'custom') {
+      // 获取用户输入的页面范围
+      const input = prompt(i18next.t('processing.splitPrompt', { count: pageCount }), '1, 3-5, 7');
       
-      hideLoadingOverlay();
-      alert(`已成功将PDF拆分为${pageCount}个单页文档`);
-    } else {
-      // 自定义页面拆分
-      // 解析用户输入的页码（例如 "1,3,5-7"）
-      const pageRanges = splitMode.split(',').map(range => range.trim());
-      const selectedPages = [];
-      
-      for (const range of pageRanges) {
-        if (range.includes('-')) {
-          // 处理页面范围（例如 "5-7"）
-          const [start, end] = range.split('-').map(num => parseInt(num.trim(), 10) - 1);
-          for (let i = start; i <= end; i++) {
-            if (i >= 0 && i < pageCount) {
-              selectedPages.push(i);
-            }
-          }
-        } else {
-          // 处理单个页码
-          const pageNum = parseInt(range, 10) - 1;
-          if (pageNum >= 0 && pageNum < pageCount) {
-            selectedPages.push(pageNum);
-          }
-        }
-      }
-      
-      // 检查是否有有效页码
-      if (selectedPages.length === 0) {
+      if (!input || input.trim() === '') {
         hideLoadingOverlay();
-        alert(i18next.t('processing.invalidRange'));
+        alert(i18next.t('processing.splitCanceled'));
         return;
       }
       
-      // 创建新文档包含所选页面
+      try {
+        pageRanges = parsePageRanges(input, pageCount);
+      } catch (error) {
+        hideLoadingOverlay();
+        alert(error.message);
+        return;
+      }
+    } else {
+      // 拆分所有页面
+      pageRanges = Array.from({ length: pageCount }, (_, i) => [i]);
+    }
+    
+    console.log('将拆分以下页面范围:', pageRanges);
+    
+    showLoadingOverlay(i18next.t('processing.splitting'), 50);
+    
+    // 拆分并下载PDF
+    const zip = new JSZip();
+    
+    // 处理每个页面范围
+    for (let i = 0; i < pageRanges.length; i++) {
+      // 更新进度：50% + 占总进度45%的处理页面进度
+      const progress = 50 + Math.round((i / pageRanges.length) * 45);
+      showLoadingOverlay(i18next.t('processing.splittingPage', { current: i + 1, total: pageRanges.length }), progress);
+      
+      const range = pageRanges[i];
+      
+      // 创建新的PDF文档
       const newPdfDoc = await PDFLib.PDFDocument.create();
       
-      for (let i = 0; i < selectedPages.length; i++) {
-        // 更新加载进度
-        showLoadingOverlay(`${i18next.t('processing.splitting')} (${i+1}/${selectedPages.length})`);
-        
-        const pageIndex = selectedPages[i];
-        const [newPage] = await newPdfDoc.copyPages(pdfDoc, [pageIndex]);
-        newPdfDoc.addPage(newPage);
+      // 复制指定页面
+      const copiedPages = await newPdfDoc.copyPages(pdfDoc, range);
+      
+      // 添加页面到新文档
+      copiedPages.forEach(page => {
+        newPdfDoc.addPage(page);
+      });
+      
+      // 保存新PDF
+      const newPdfBytes = await newPdfDoc.save();
+      
+      // 添加到ZIP文件
+      let filename;
+      if (pageRanges.length === pageCount) {
+        // 如果是拆分所有页面，使用页码作为文件名
+        filename = `page_${range[0] + 1}.pdf`;
+      } else if (range.length === 1) {
+        // 如果只有一页，使用页码作为文件名
+        filename = `page_${range[0] + 1}.pdf`;
+      } else {
+        // 否则使用范围作为文件名
+        filename = `pages_${range[0] + 1}_to_${range[range.length - 1] + 1}.pdf`;
       }
       
-      // 保存并下载拆分后的PDF
-      const pdfBytes = await newPdfDoc.save();
-      downloadPDF(pdfBytes, 'split_custom.pdf');
-      
-      hideLoadingOverlay();
-      alert(`已成功提取${selectedPages.length}个页面`);
+      zip.file(filename, newPdfBytes);
     }
-  } catch (error) {
+    
+    showLoadingOverlay(i18next.t('processing.creatingZip'), 95);
+    
+    // 生成ZIP文件
+    const zipContent = await zip.generateAsync({ type: 'blob' });
+    
+    // 隐藏加载遮罩层
     hideLoadingOverlay();
-    console.error('Error splitting PDF:', error);
-    alert(i18next.t('processing.error') + error.message);
+    
+    // 下载ZIP文件
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(zipContent);
+    link.download = 'split_pdf.zip';
+    link.click();
+    
+    // 显示拆分完成消息
+    alert(i18next.t('processing.splitComplete', { count: pageRanges.length }));
+    
+  } catch (error) {
+    console.error('拆分PDF时出错:', error);
+    hideLoadingOverlay();
+    alert(i18next.t('processing.splitError') + error.message);
   }
 }
 
-// 显示加载覆盖层
-function showLoadingOverlay(message) {
-  const overlay = document.getElementById('loading-overlay');
-  const loadingText = document.getElementById('loading-text');
+// 解析页面范围
+function parsePageRanges(input, pageCount) {
+  const ranges = [];
+  const parts = input.split(',');
   
-  if (overlay && loadingText) {
-    loadingText.textContent = message || 'Processing...';
-    overlay.classList.remove('hidden');
+  for (const part of parts) {
+    const trimmed = part.trim();
+    
+    if (trimmed.includes('-')) {
+      // 处理范围，如 "1-5"
+      const [start, end] = trimmed.split('-').map(num => parseInt(num.trim(), 10) - 1);
+      
+      if (isNaN(start) || isNaN(end)) {
+        throw new Error(i18next.t('processing.invalidPageRange'));
+      }
+      
+      if (start < 0 || end >= pageCount || start > end) {
+        throw new Error(i18next.t('processing.pageOutOfRange', { count: pageCount }));
+      }
+      
+      // 将范围内的所有页面添加到结果中
+      const pagesInRange = [];
+      for (let i = start; i <= end; i++) {
+        pagesInRange.push(i);
+      }
+      ranges.push(pagesInRange);
+    } else {
+      // 处理单页，如 "3"
+      const pageNum = parseInt(trimmed, 10) - 1;
+      
+      if (isNaN(pageNum)) {
+        throw new Error(i18next.t('processing.invalidPageNumber'));
+      }
+      
+      if (pageNum < 0 || pageNum >= pageCount) {
+        throw new Error(i18next.t('processing.pageOutOfRange', { count: pageCount }));
+      }
+      
+      ranges.push([pageNum]);
+    }
   }
-}
-
-// 隐藏加载覆盖层
-function hideLoadingOverlay() {
-  const overlay = document.getElementById('loading-overlay');
   
-  if (overlay) {
-    overlay.classList.add('hidden');
-  }
+  return ranges;
 }
 
 // 格式化文件大小
