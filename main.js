@@ -4,7 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { PDFDocument } from 'pdf-lib';
 
 // 为PDF库创建全局变量方便访问
-const PDFLib = { PDFDocument };
+const PDFLib = window.PDFLib || {};
 
 // Initialize i18next
 i18next
@@ -372,19 +372,27 @@ i18next
     }
   });
 
-// DOM完全加载后执行
+// 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('页面已加载，初始化应用程序...');
+  
   // 初始化上传区域
   initializeUploadArea();
   
   // 初始化操作按钮
   initializeOperationButtons();
   
-  // 初始化语言切换
-  initializeLanguageSwitcher();
-  
   // 初始化社交分享功能
   initializeShareFeature();
+  
+  // 启动倒计时
+  startCountdown();
+  
+  // 设置默认操作为压缩
+  window.currentOperation = 'compress';
+  setActiveOperation('compress');
+  
+  console.log('应用程序初始化完成');
 });
 
 // 更新UI语言
@@ -415,82 +423,104 @@ function updateUILanguage(lang) {
 
 // 初始化上传区域
 function initializeUploadArea() {
-  const uploadArea = document.querySelector('.upload-area');
   const uploadDropArea = document.getElementById('upload-drop-area');
   const fileInput = document.getElementById('pdf-upload');
   const selectButton = document.getElementById('pdf-select-button');
   
-  if (!uploadArea) return;
+  console.log('初始化上传区域');
+  console.log('上传区域元素:', uploadDropArea ? '已找到' : '未找到');
+  console.log('文件输入元素:', fileInput ? '已找到' : '未找到');
+  console.log('选择按钮元素:', selectButton ? '已找到' : '未找到');
+  
+  if (!uploadDropArea || !fileInput || !selectButton) {
+    console.error('上传组件缺失，无法初始化上传功能');
+    return;
+  }
   
   // 拖放功能
-  if (uploadDropArea) {
-    uploadDropArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadDropArea.classList.add('border-primary-500');
-    });
-    
-    uploadDropArea.addEventListener('dragleave', () => {
-      uploadDropArea.classList.remove('border-primary-500');
-    });
-    
-    uploadDropArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadDropArea.classList.remove('border-primary-500');
-      
-      if (e.dataTransfer.files.length) {
-        fileInput.files = e.dataTransfer.files;
-        handleFileUpload(e.dataTransfer.files[0]);
-      }
-    });
-    
-    // 点击上传区域触发文件选择
-    uploadDropArea.addEventListener('click', (e) => {
-      // 阻止冒泡确保不会重复触发事件
-      if (e.target !== selectButton && !selectButton.contains(e.target)) {
-        fileInput.click();
-      }
-    });
-  }
+  uploadDropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadDropArea.classList.add('border-primary-500');
+    console.log('文件拖动到上传区域上方');
+  });
   
-  // 专门的选择文件按钮
-  if (selectButton) {
-    selectButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation(); // 防止冒泡到上传区域
-      console.log('选择文件按钮被点击');
-      if (fileInput) {
-        fileInput.click();
-      }
-    });
-  }
+  uploadDropArea.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadDropArea.classList.remove('border-primary-500');
+    console.log('文件离开上传区域');
+  });
   
-  if (fileInput) {
-    fileInput.addEventListener('change', (e) => {
-      console.log('文件输入变化');
-      if (fileInput.files.length) {
-        handleFileUpload(fileInput.files[0]);
-      }
-    });
-  } else {
-    console.error('未找到文件输入元素');
-  }
+  uploadDropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadDropArea.classList.remove('border-primary-500');
+    console.log('文件已拖放到上传区域');
+    
+    if (e.dataTransfer.files.length) {
+      const file = e.dataTransfer.files[0];
+      console.log('选择的文件:', file.name, file.type, file.size);
+      handleFileUpload(file);
+    }
+  });
+  
+  // 点击上传区域触发文件选择
+  uploadDropArea.addEventListener('click', (e) => {
+    // 阻止冒泡确保不会重复触发事件
+    if (e.target !== selectButton && !selectButton.contains(e.target)) {
+      console.log('点击上传区域，触发文件选择');
+      fileInput.click();
+    }
+  });
+  
+  // 选择文件按钮点击事件
+  selectButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // 防止冒泡到上传区域
+    console.log('选择文件按钮被点击');
+    fileInput.click();
+  });
+  
+  // 文件选择变化事件
+  fileInput.addEventListener('change', (e) => {
+    console.log('文件输入变化事件触发');
+    if (fileInput.files.length) {
+      const file = fileInput.files[0];
+      console.log('选择的文件:', file.name, file.type, file.size);
+      handleFileUpload(file);
+    }
+  });
+  
+  console.log('上传区域初始化完成');
 }
 
 // 初始化操作按钮
 function initializeOperationButtons() {
-  const compressBtn = document.querySelector('button:nth-child(1)');
-  const splitBtn = document.querySelector('button:nth-child(2)');
+  const compressBtn = document.getElementById('compress-btn');
+  const splitBtn = document.getElementById('split-btn');
+  
+  console.log('初始化操作按钮');
+  console.log('压缩按钮:', compressBtn ? '已找到' : '未找到');
+  console.log('拆分按钮:', splitBtn ? '已找到' : '未找到');
   
   if (compressBtn) {
     compressBtn.addEventListener('click', () => {
+      console.log('选择压缩操作');
       setActiveOperation('compress');
     });
   }
   
   if (splitBtn) {
     splitBtn.addEventListener('click', () => {
+      console.log('选择拆分操作');
       setActiveOperation('split');
     });
+  }
+  
+  // 初始化设置压缩操作为默认
+  if (compressBtn && splitBtn) {
+    setActiveOperation('compress');
   }
 }
 
