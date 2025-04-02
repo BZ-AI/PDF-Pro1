@@ -686,78 +686,80 @@ async function handleFileUpload(file) {
   }
 }
 
-// 显示上传进度界面
+// 显示文件上传进度
 function showUploadProgress(file) {
   const uploadProgressArea = document.getElementById('upload-progress-area');
-  const uploadInitial = document.getElementById('upload-initial');
   const uploadingFilename = document.getElementById('uploading-filename');
-  
-  if (uploadProgressArea) uploadProgressArea.classList.remove('hidden');
-  if (uploadInitial) uploadInitial.classList.add('hidden');
-  if (uploadingFilename) uploadingFilename.textContent = file.name;
-  
-  // 重置进度条
-  updateUploadProgress(0);
-  
-  debug(`显示上传进度界面，文件名: ${file.name}`);
-}
-
-// 隐藏上传进度界面
-function hideUploadProgress() {
-  const uploadProgressArea = document.getElementById('upload-progress-area');
-  if (uploadProgressArea) uploadProgressArea.classList.add('hidden');
-  
-  debug('隐藏上传进度界面');
-}
-
-// 更新上传进度
-function updateUploadProgress(percent, speed = '') {
   const uploadProgressBar = document.getElementById('upload-progress-bar');
   const uploadProgressText = document.getElementById('upload-progress-text');
-  const uploadSpeed = document.getElementById('upload-speed');
   
-  if (uploadProgressBar) uploadProgressBar.style.width = `${percent}%`;
-  if (uploadProgressText) uploadProgressText.textContent = `${percent}%`;
-  if (uploadSpeed && speed) uploadSpeed.textContent = speed;
+  if (uploadProgressArea) {
+    uploadProgressArea.classList.remove('hidden');
+  }
   
-  debug(`更新上传进度: ${percent}%, 速度: ${speed || '未知'}`);
+  if (uploadingFilename) {
+    uploadingFilename.textContent = file.name;
+  }
+  
+  if (uploadProgressBar) {
+    uploadProgressBar.style.width = '0%';
+  }
+  
+  if (uploadProgressText) {
+    uploadProgressText.textContent = '0%';
+  }
+  
+  debug(`正在上传文件: ${file.name}`);
 }
 
-// 模拟文件上传过程（在真实环境中，这里应该是实际的上传代码）
+// 隐藏上传进度
+function hideUploadProgress() {
+  const uploadProgressArea = document.getElementById('upload-progress-area');
+  
+  if (uploadProgressArea) {
+    uploadProgressArea.classList.add('hidden');
+  }
+  
+  debug('文件上传完成');
+}
+
+// 模拟文件上传过程
 async function simulateFileUpload(file) {
-  return new Promise((resolve, reject) => {
-    const totalSize = file.size;
-    const chunkSize = totalSize / 10; // 模拟分10次上传
-    let uploadedSize = 0;
-    let startTime = Date.now();
-    let lastUpdate = startTime;
-    let step = 0;
+  return new Promise((resolve) => {
+    const uploadProgressBar = document.getElementById('upload-progress-bar');
+    const uploadProgressText = document.getElementById('upload-progress-text');
+    const uploadSpeed = document.getElementById('upload-speed');
     
-    // 模拟分块上传的过程
+    let progress = 0;
+    const totalSize = file.size;
+    const updateInterval = 50; // 更新间隔(ms)
+    
+    // 根据文件大小计算适当的增量，确保总时间在1-3秒
+    const increment = Math.max(1, Math.min(5, Math.ceil(file.size / (1024 * 1024))));
+    
     const interval = setInterval(() => {
-      step++;
-      uploadedSize = Math.min(totalSize, step * chunkSize);
-      const percent = Math.floor((uploadedSize / totalSize) * 100);
+      progress += increment;
       
-      // 计算上传速度
-      const now = Date.now();
-      const elapsed = (now - lastUpdate) / 1000; // 秒数
-      const bytesPerSecond = (chunkSize / elapsed);
-      const speed = formatFileSize(bytesPerSecond) + '/s';
-      
-      updateUploadProgress(percent, speed);
-      lastUpdate = now;
-      
-      // 模拟上传完成
-      if (percent >= 100) {
+      if (progress >= 100) {
+        progress = 100;
         clearInterval(interval);
-        setTimeout(() => {
-          // 给一点时间让用户看到100%的状态
-          debug('文件上传完成');
-          resolve();
-        }, 500);
+        
+        if (uploadProgressBar) uploadProgressBar.style.width = '100%';
+        if (uploadProgressText) uploadProgressText.textContent = '100%';
+        if (uploadSpeed) uploadSpeed.textContent = '完成';
+        
+        // 模拟完成后延迟一点时间再返回
+        setTimeout(resolve, 300);
+      } else {
+        if (uploadProgressBar) uploadProgressBar.style.width = `${progress}%`;
+        if (uploadProgressText) uploadProgressText.textContent = `${progress}%`;
+        
+        // 计算并显示上传速度
+        const loadedBytes = Math.floor(totalSize * (progress / 100));
+        const speedKBps = Math.floor((loadedBytes / 1024) / ((progress / 100) * 2)); // 假设总时间约2秒
+        if (uploadSpeed) uploadSpeed.textContent = `${speedKBps} KB/s`;
       }
-    }, 500); // 每0.5秒更新一次
+    }, updateInterval);
   });
 }
 
@@ -829,6 +831,23 @@ function initializeOperationButtons() {
     compressBtn.addEventListener('click', () => {
       setActiveOperation('compress');
       debug('选择了压缩操作');
+      
+      // 如果已经有文件上传，提示用户操作已切换但将继续使用当前文件
+      if (window.currentPdfFile) {
+        debug(`操作已切换为压缩，使用当前文件: ${window.currentPdfFile.name}`);
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-20 right-4 bg-primary-600 text-white px-4 py-2 rounded shadow-lg z-50 transform transition-transform duration-300';
+        toast.innerHTML = `<div class="flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>已切换至压缩操作，将使用当前文件</div>`;
+        document.body.appendChild(toast);
+        
+        // 3秒后移除
+        setTimeout(() => {
+          toast.classList.add('translate-x-full');
+          setTimeout(() => {
+            document.body.removeChild(toast);
+          }, 300);
+        }, 3000);
+      }
     });
   }
   
@@ -836,6 +855,23 @@ function initializeOperationButtons() {
     splitBtn.addEventListener('click', () => {
       setActiveOperation('split');
       debug('选择了拆分操作');
+      
+      // 如果已经有文件上传，提示用户操作已切换但将继续使用当前文件
+      if (window.currentPdfFile) {
+        debug(`操作已切换为拆分，使用当前文件: ${window.currentPdfFile.name}`);
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-20 right-4 bg-primary-600 text-white px-4 py-2 rounded shadow-lg z-50 transform transition-transform duration-300';
+        toast.innerHTML = `<div class="flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>已切换至拆分操作，将使用当前文件</div>`;
+        document.body.appendChild(toast);
+        
+        // 3秒后移除
+        setTimeout(() => {
+          toast.classList.add('translate-x-full');
+          setTimeout(() => {
+            document.body.removeChild(toast);
+          }, 300);
+        }, 3000);
+      }
     });
   }
 }
@@ -886,7 +922,35 @@ function showProcessResult(operation, data) {
       if (compressedSize) compressedSize.textContent = formatFileSize(data.compressedSize);
       if (compressionRatio) compressionRatio.textContent = `${data.ratio}%`;
       
+      // 计算压缩百分比文字（如"减小了25%"）
+      const reductionPercent = data.ratio;
+      const reductionText = reductionPercent > 0 
+        ? `减小了${reductionPercent}%` 
+        : `增大了${Math.abs(reductionPercent)}%`;
+      
+      // 如果有自定义元素显示压缩减小比例，可以更新这里
+      const compressionResultText = document.getElementById('compression-result-text');
+      if (compressionResultText) {
+        compressionResultText.textContent = reductionText;
+        // 根据压缩效果添加不同颜色
+        if (reductionPercent > 30) {
+          compressionResultText.className = 'text-green-600 font-bold';
+        } else if (reductionPercent > 0) {
+          compressionResultText.className = 'text-blue-600 font-bold';
+        } else {
+          compressionResultText.className = 'text-red-600 font-bold';
+        }
+      }
+      
       debug(`压缩结果: 原始大小=${formatFileSize(data.originalSize)}, 压缩后=${formatFileSize(data.compressedSize)}, 压缩率=${data.ratio}%`);
+      
+      // 确保下载按钮可见并可点击
+      const downloadBtn = document.getElementById('download-pdf');
+      if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        downloadBtn.classList.add('hover:bg-primary-700');
+      }
     } else if (operation === 'split') {
       // 隐藏压缩结果
       const compressionResults = document.getElementById('compression-results');
@@ -909,6 +973,7 @@ async function compressPDF(arrayBuffer, compressionLevel = 'medium') {
     updateFileProgress(10);
     
     debug(`开始压缩PDF，压缩级别：${compressionLevel}`);
+    updateProgress('加载PDF文件...');
     
     // 使用pdf-lib加载PDF文档
     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
@@ -918,16 +983,20 @@ async function compressPDF(arrayBuffer, compressionLevel = 'medium') {
     const pages = pdfDoc.getPages();
     const pageCount = pages.length;
     
+    debug(`成功加载PDF，页数：${pageCount}`);
+    updateProgress(`正在准备压缩${pageCount}页...`);
+    
     // 创建一个新的PDF文档用于保存压缩后的内容
     const compressedPdf = await PDFLib.PDFDocument.create();
     updateFileProgress(40);
     
     // 复制所有页面到新文档，应用压缩选项
     for (let i = 0; i < pageCount; i++) {
+      updateProgress(`正在处理第${i+1}页，共${pageCount}页`);
       const [copiedPage] = await compressedPdf.copyPages(pdfDoc, [i]);
       compressedPdf.addPage(copiedPage);
       
-      // 更新进度，页面复制占40%的进度
+      // 更新进度，页面复制占30%的进度
       const progressPercent = 40 + Math.floor((i + 1) / pageCount * 30);
       updateFileProgress(progressPercent);
     }
@@ -938,6 +1007,9 @@ async function compressPDF(arrayBuffer, compressionLevel = 'medium') {
       addDefaultPage: false,
       preserveExistingEncryption: false
     };
+    
+    debug(`应用${compressionLevel}级别压缩...`);
+    updateProgress(`正在应用${getCompressionLevelName(compressionLevel)}压缩...`);
     
     // 应用不同的压缩策略
     switch(compressionLevel) {
@@ -1022,6 +1094,7 @@ async function compressPDF(arrayBuffer, compressionLevel = 'medium') {
     }
     
     updateFileProgress(90);
+    updateProgress('正在保存PDF文件...');
     
     // 保存压缩后的PDF
     const compressedBytes = await compressedPdf.save(compressionOptions);
@@ -1034,6 +1107,7 @@ async function compressPDF(arrayBuffer, compressionLevel = 'medium') {
     
     // 显示结果
     debug(`压缩完成：原始大小=${formatFileSize(originalSize)}, 压缩后大小=${formatFileSize(compressedSize)}, 压缩率=${compressionRatio}%`);
+    updateProgress('压缩完成！');
     
     // 显示处理结果
     showProcessResult('compress', {
@@ -1058,6 +1132,17 @@ async function compressPDF(arrayBuffer, compressionLevel = 'medium') {
     console.error('压缩PDF时出错:', error);
     alert('处理PDF时出错: ' + error.message);
     throw error;
+  }
+}
+
+// 获取压缩级别的中文名称
+function getCompressionLevelName(level) {
+  switch(level) {
+    case 'lossless': return '无损';
+    case 'medium': return '中等';
+    case 'extreme': return '极限';
+    case 'custom': return '自定义';
+    default: return '中等';
   }
 }
 
@@ -1308,10 +1393,22 @@ function initializeLanguageSwitcher() {
 
 // 设置当前活动操作
 function setActiveOperation(operation) {
+  // 保存当前的操作类型
+  const previousOperation = window.currentOperation;
+  
+  // 更新当前操作类型
   window.currentOperation = operation;
   
-  // 重置界面
-  resetUploadArea();
+  // 只有在操作类型发生变化且没有已上传文件时才完全重置上传区域
+  if (previousOperation !== operation) {
+    if (!window.currentPdfFile) {
+      // 没有上传文件，完全重置界面
+      resetUploadArea();
+    } else {
+      // 已有上传文件，只更新操作选项显示，保留文件状态
+      updateOperationOptionsWithCurrentFile();
+    }
+  }
   
   // 高亮当前选中的操作按钮
   const compressBtn = document.querySelector('button:nth-child(1)');
@@ -1330,6 +1427,34 @@ function setActiveOperation(operation) {
     compressBtn.classList.remove('bg-primary-600', 'text-white');
     compressBtn.classList.add('bg-white', 'border-2', 'border-primary-600', 'text-primary-600');
   }
+}
+
+// 在已有文件的情况下更新操作选项显示
+function updateOperationOptionsWithCurrentFile() {
+  // 隐藏上传拖放区域，因为文件已经上传
+  const uploadDropArea = document.getElementById('upload-drop-area');
+  if (uploadDropArea) {
+    uploadDropArea.classList.add('hidden');
+  }
+  
+  // 隐藏所有选项面板
+  const compressOptions = document.getElementById('compress-options');
+  const splitOptions = document.getElementById('split-options');
+  const compressionResults = document.getElementById('compression-results');
+  
+  // 隐藏所有区域
+  if (compressOptions) compressOptions.classList.add('hidden');
+  if (splitOptions) splitOptions?.classList.add('hidden');
+  if (compressionResults) compressionResults.classList.add('hidden');
+  
+  // 根据当前操作类型显示对应选项
+  if (window.currentOperation === 'compress') {
+    if (compressOptions) compressOptions.classList.remove('hidden');
+  } else if (window.currentOperation === 'split') {
+    if (splitOptions) splitOptions?.classList.remove('hidden');
+  }
+  
+  debug(`已更新操作选项显示，当前操作: ${window.currentOperation}，当前文件: ${window.currentPdfFile?.name}`);
 }
 
 // 调试日志函数
