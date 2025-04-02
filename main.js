@@ -567,10 +567,25 @@ async function handleFileUpload(file) {
     return;
   }
   
+  // 显示加载遮罩层
+  showLoadingOverlay(i18next.t('processing.loadingPdf'));
+  
   // 继续处理文件
   try {
+    console.log('开始处理文件...');
     // 读取文件为ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
+    console.log('文件已读取为ArrayBuffer, 大小:', arrayBuffer.byteLength);
+    
+    // 确保当前操作类型已设置，默认为压缩
+    if (!window.currentOperation) {
+      console.log('未设置当前操作，默认设为压缩');
+      window.currentOperation = 'compress';
+      // 视觉上突出显示压缩按钮
+      setActiveOperation('compress');
+    }
+    
+    console.log('当前操作:', window.currentOperation);
     
     // 根据当前操作决定下一步
     if (window.currentOperation === 'compress') {
@@ -579,7 +594,8 @@ async function handleFileUpload(file) {
       await splitPDF(arrayBuffer);
     }
   } catch (error) {
-    console.error('Error processing file:', error);
+    hideLoadingOverlay();
+    console.error('处理文件时出错:', error);
     alert(i18next.t('processing.error') + error.message);
   }
 }

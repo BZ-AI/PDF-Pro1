@@ -243,7 +243,7 @@
                 <div class="text-center">
                     <label for="pdf-upload" class="block text-gray-700 text-sm font-bold mb-2">上传您的PDF</label>
                     <div id="upload-drop-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-primary-500 transition cursor-pointer">
-                        <input type="file" id="pdf-upload" class="hidden" accept=".pdf">
+                        <input type="file" id="pdf-upload" class="hidden" accept="application/pdf">
                         <p class="text-gray-500">在此处拖放PDF或点击浏览</p>
                         <p class="text-sm text-gray-400 mt-2">📣 <span class="text-green-600 font-semibold">限时优惠：</span> 最大文件大小：<span class="text-red-600 font-bold">50MB</span>（免费计划）</p>
                         <button id="pdf-select-button" class="mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-bold shadow-md">
@@ -517,6 +517,10 @@
         </div>
     </div>
 
+    <!-- 添加pdf-lib库 -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+    <!-- 加载主脚本 -->
     <script type="module" src="main.js"></script>
     
     <!-- 移动菜单脚本 -->
@@ -830,6 +834,108 @@
                 });
             });
         });
+    </script>
+
+    <!-- 在body标签结束前添加 -->
+    <!-- 加载遮罩层 -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-md w-full mx-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p id="loading-text" class="text-lg font-medium mb-2">处理中...</p>
+            <p class="text-sm text-gray-500">请不要关闭此窗口，文件正在本地处理</p>
+        </div>
+    </div>
+
+    <!-- 在</body>标签前添加的调试代码 -->
+    <script>
+      // 调试文件上传功能
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('页面加载完成，调试文件上传...');
+        
+        const fileInput = document.getElementById('pdf-upload');
+        const uploadButton = document.getElementById('pdf-select-button');
+        const uploadDropArea = document.getElementById('upload-drop-area');
+        
+        console.log('文件输入元素:', fileInput ? '已找到' : '未找到');
+        console.log('上传按钮:', uploadButton ? '已找到' : '未找到');
+        console.log('拖放区域:', uploadDropArea ? '已找到' : '未找到');
+        
+        if (fileInput) {
+          console.log('文件输入属性:', {
+            id: fileInput.id,
+            type: fileInput.type,
+            accept: fileInput.accept,
+            classList: fileInput.className
+          });
+          
+          // 直接为文件输入添加事件监听器
+          fileInput.addEventListener('change', function(e) {
+            console.log('文件输入变化事件触发');
+            if (fileInput.files && fileInput.files.length > 0) {
+              const file = fileInput.files[0];
+              console.log('选择的文件:', {
+                name: file.name,
+                type: file.type,
+                size: file.size
+              });
+            } else {
+              console.log('未选择文件');
+            }
+          });
+        }
+        
+        if (uploadButton) {
+          uploadButton.addEventListener('click', function(e) {
+            console.log('上传按钮点击');
+            e.preventDefault();
+            e.stopPropagation();
+            if (fileInput) {
+              console.log('触发文件选择');
+              fileInput.click();
+            } else {
+              console.error('找不到文件输入元素，无法触发上传');
+            }
+          });
+        }
+        
+        if (uploadDropArea) {
+          uploadDropArea.addEventListener('dragover', function(e) {
+            console.log('拖拽经过上传区域');
+            e.preventDefault();
+            uploadDropArea.classList.add('border-primary-500');
+          });
+          
+          uploadDropArea.addEventListener('dragleave', function() {
+            console.log('拖拽离开上传区域');
+            uploadDropArea.classList.remove('border-primary-500');
+          });
+          
+          uploadDropArea.addEventListener('drop', function(e) {
+            console.log('文件拖放到上传区域');
+            e.preventDefault();
+            uploadDropArea.classList.remove('border-primary-500');
+            
+            if (e.dataTransfer.files.length) {
+              const file = e.dataTransfer.files[0];
+              console.log('拖放的文件:', {
+                name: file.name,
+                type: file.type,
+                size: file.size
+              });
+              
+              if (fileInput) {
+                fileInput.files = e.dataTransfer.files;
+                console.log('文件已分配给文件输入');
+                
+                // 手动触发change事件
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+                console.log('手动触发change事件');
+              }
+            }
+          });
+        }
+      });
     </script>
 </body>
 </html>
