@@ -402,101 +402,70 @@ function updateUILanguage(lang) {
 
 // 初始化上传区域
 function initializeUploadArea() {
-  const uploadArea = document.querySelector('.upload-area');
-  const uploadDropArea = document.getElementById('upload-drop-area');
   const fileInput = document.getElementById('pdf-upload');
+  const dropArea = document.getElementById('upload-drop-area');
   const selectButton = document.getElementById('pdf-select-button');
   
-  console.log('初始化上传区域');
-  console.log('selectButton:', selectButton ? '找到了' : '未找到');
-  console.log('fileInput:', fileInput ? '找到了' : '未找到');
-  
-  if (!uploadArea) {
-    console.error('未找到上传区域元素');
-    return;
-  }
-  
-  // 拖放功能
-  if (uploadDropArea) {
-    uploadDropArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadDropArea.classList.add('border-primary-500');
-    });
-    
-    uploadDropArea.addEventListener('dragleave', () => {
-      uploadDropArea.classList.remove('border-primary-500');
-    });
-    
-    uploadDropArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadDropArea.classList.remove('border-primary-500');
-      
-      if (e.dataTransfer.files.length) {
-        fileInput.files = e.dataTransfer.files;
-        handleFileUpload(e.dataTransfer.files[0]);
+  if (fileInput && dropArea) {
+    // 选择文件
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        handleFileUpload(file);
       }
     });
     
-    // 点击上传区域触发文件选择
-    uploadDropArea.addEventListener('click', (e) => {
-      // 阻止冒泡确保不会重复触发事件
-      if (e.target !== selectButton && !selectButton.contains(e.target) && 
-          !e.target.closest('#file-info') && !e.target.closest('#processing-area') && 
-          !e.target.closest('#result-area')) {
-        fileInput.click();
-      }
+    // 拖放处理
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
     });
-  }
-  
-  // 专门的选择文件按钮
-  if (selectButton) {
-    // 先移除可能存在的事件监听器
-    selectButton.removeEventListener('click', handleSelectButtonClick);
     
-    // 添加新的事件监听器
-    selectButton.addEventListener('click', handleSelectButtonClick);
-    
-    // 直接在按钮上添加内联事件处理
-    selectButton.onclick = function(e) {
+    function preventDefaults(e) {
       e.preventDefault();
       e.stopPropagation();
-      console.log('选择文件按钮被点击（内联）');
-      if (fileInput) {
-        fileInput.click();
-      }
-    };
-  } else {
-    console.error('未找到选择文件按钮元素');
-  }
-  
-  // 选择文件按钮点击处理函数
-  function handleSelectButtonClick(e) {
-    e.preventDefault();
-    e.stopPropagation(); // 防止冒泡到上传区域
-    console.log('选择文件按钮被点击（监听器）');
-    if (fileInput) {
-      fileInput.click();
-    } else {
-      console.error('未找到文件输入元素');
     }
-  }
-  
-  if (fileInput) {
-    fileInput.addEventListener('change', (e) => {
-      console.log('文件输入变化');
-      if (fileInput.files.length) {
-        currentFile = fileInput.files[0];
-        handleFileUpload(currentFile);
+    
+    // 高亮拖放区域
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, () => {
+        dropArea.classList.add('border-primary-500');
+        dropArea.classList.add('bg-primary-50');
+      });
+    });
+    
+    // 移除高亮
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, () => {
+        dropArea.classList.remove('border-primary-500');
+        dropArea.classList.remove('bg-primary-50');
+      });
+    });
+    
+    // 处理拖放文件
+    dropArea.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const file = dt.files[0];
+      
+      if (file && file.type === 'application/pdf') {
+        handleFileUpload(file);
+      } else {
+        alert('请上传PDF文件');
       }
     });
-  } else {
-    console.error('未找到文件输入元素');
+    
+    // 点击选择按钮
+    if (selectButton) {
+      selectButton.addEventListener('click', (e) => {
+        e.preventDefault(); // 防止表单提交
+        fileInput.click();
+      });
+    }
   }
 }
 
 // 初始化UI控件
 function initializeUIControls() {
-  // 压缩级别选择
+  // 初始化压缩级别选择
   const compressionLevels = document.querySelectorAll('.compression-level');
   compressionLevels.forEach(button => {
     button.addEventListener('click', function() {
@@ -513,12 +482,12 @@ function initializeUIControls() {
       this.classList.add('bg-primary-50');
       
       // 设置压缩级别
-      currentCompressionLevel = this.getAttribute('data-level');
-      debug(`选择了压缩级别: ${currentCompressionLevel}`);
+      window.currentCompressionLevel = this.getAttribute('data-level');
+      debug(`选择了压缩级别: ${window.currentCompressionLevel}`);
       
       // 如果是自定义大小，显示自定义大小选项
       const customSizeOptions = document.getElementById('custom-size-options');
-      if (currentCompressionLevel === 'custom' && customSizeOptions) {
+      if (window.currentCompressionLevel === 'custom' && customSizeOptions) {
         customSizeOptions.classList.remove('hidden');
       } else if (customSizeOptions) {
         customSizeOptions.classList.add('hidden');
@@ -618,26 +587,32 @@ async function startProcessing() {
       return;
     }
     
+    // 显示处理进度覆盖层
+    showProcessingOverlay();
+    
     // 获取文件数据
     const file = window.currentPdfFile;
     const arrayBuffer = await file.arrayBuffer();
     
     // 判断处理类型
     if (window.currentOperation === 'compress') {
-      await compressPDF(arrayBuffer, currentCompressionLevel);
+      debug('开始压缩PDF文件');
+      await compressPDF(arrayBuffer, window.currentCompressionLevel || 'medium');
     } else if (window.currentOperation === 'split') {
+      debug('开始拆分PDF文件');
       // 获取拆分选项
       const splitOptions = {
-        type: currentSplitType
+        type: 'all-pages' // 默认拆分所有页
       };
       
-      if (currentSplitType === 'custom-range') {
-        // 获取自定义范围
-        const startPage = parseInt(document.getElementById('split-start-page')?.value || '1');
-        const endPage = parseInt(document.getElementById('split-end-page')?.value || '1');
-        
-        splitOptions.startPage = startPage;
-        splitOptions.endPage = endPage;
+      // 如果有自定义范围
+      const startPageEl = document.getElementById('split-start-page');
+      const endPageEl = document.getElementById('split-end-page'); 
+      
+      if (startPageEl && endPageEl) {
+        splitOptions.type = 'custom-range';
+        splitOptions.startPage = parseInt(startPageEl.value);
+        splitOptions.endPage = parseInt(endPageEl.value);
       }
       
       await splitPDF(arrayBuffer, splitOptions);
@@ -686,9 +661,6 @@ async function handleFileUpload(file) {
     // 隐藏上传进度
     hideUploadProgress();
     
-    // 显示操作选项
-    updateOperationOptions();
-    
     // 加载PDF文件
     const arrayBuffer = await file.arrayBuffer();
     debug(`文件已加载到内存: ${formatFileSize(arrayBuffer.byteLength)}`);
@@ -701,8 +673,11 @@ async function handleFileUpload(file) {
         compressOptions.classList.remove('hidden');
       }
     } else if (window.currentOperation === 'split') {
-      // 对于拆分操作，更新拆分选项（如果有的话）
-      updateSplitOptions(arrayBuffer);
+      // 对于拆分操作，显示拆分选项（如果有的话）
+      const splitOptions = document.getElementById('split-options');
+      if (splitOptions) {
+        splitOptions.classList.remove('hidden');
+      }
     }
   } catch (error) {
     debug(`处理文件上传时出错: ${error.message}`);
@@ -853,12 +828,14 @@ function initializeOperationButtons() {
   if (compressBtn) {
     compressBtn.addEventListener('click', () => {
       setActiveOperation('compress');
+      debug('选择了压缩操作');
     });
   }
   
   if (splitBtn) {
     splitBtn.addEventListener('click', () => {
       setActiveOperation('split');
+      debug('选择了拆分操作');
     });
   }
 }
@@ -880,6 +857,8 @@ function updateFileProgress(percent) {
 // 显示处理结果
 function showProcessResult(operation, data) {
   try {
+    debug(`显示处理结果: ${operation}`);
+    
     // 保存处理结果，用于下载
     window.lastProcessedResult = data.bytes;
     
@@ -888,7 +867,7 @@ function showProcessResult(operation, data) {
     const splitOptions = document.getElementById('split-options');
     
     if (compressOptions) compressOptions.classList.add('hidden');
-    if (splitOptions) splitOptions.classList.add('hidden');
+    if (splitOptions) splitOptions?.classList.add('hidden');
     
     // 显示相应的结果面板
     if (operation === 'compress') {
@@ -906,12 +885,15 @@ function showProcessResult(operation, data) {
       if (originalSize) originalSize.textContent = formatFileSize(data.originalSize);
       if (compressedSize) compressedSize.textContent = formatFileSize(data.compressedSize);
       if (compressionRatio) compressionRatio.textContent = `${data.ratio}%`;
+      
+      debug(`压缩结果: 原始大小=${formatFileSize(data.originalSize)}, 压缩后=${formatFileSize(data.compressedSize)}, 压缩率=${data.ratio}%`);
     } else if (operation === 'split') {
       // 隐藏压缩结果
       const compressionResults = document.getElementById('compression-results');
       if (compressionResults) compressionResults.classList.add('hidden');
       
       // TODO: 实现拆分结果显示
+      debug('拆分结果显示暂未实现');
     }
   } catch (error) {
     debug(`显示处理结果时出错: ${error.message}`);
@@ -969,10 +951,14 @@ async function compressPDF(arrayBuffer, compressionLevel = 'medium') {
         break;
       case 'custom':
         // 自定义大小压缩尝试根据目标大小调整压缩参数
-        const targetSize = parseFloat(document.getElementById('custom-size-input').value) * 1024; // 转换为字节
+        const customSizeInput = document.getElementById('custom-size-input');
+        const targetSize = parseFloat(customSizeInput ? customSizeInput.value : 1000) * 1024; // 转换为字节
+        
         // 基于原始大小和目标大小计算预估的压缩参数
         const originalSize = arrayBuffer.byteLength;
         const compressionRatio = targetSize / originalSize;
+        
+        debug(`自定义压缩: 目标大小=${formatFileSize(targetSize)}, 原始大小=${formatFileSize(originalSize)}, 比例=${compressionRatio.toFixed(2)}`);
         
         // 计算合适的压缩级别，根据目标压缩比例
         if (compressionRatio > 0.8) {
