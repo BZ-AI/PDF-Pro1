@@ -4,46 +4,168 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Pro - Professional PDF Compression & Splitting</title>
-    <link rel="stylesheet" href="/style.css">
+    <!-- 直接引用Tailwind CDN确保样式加载 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 基础样式 -->
+    <style>
+        /* 基础设置 */
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* 渐变文本效果 */
+        .gradient-text {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #0284c7;
+        }
+        
+        .btn-primary {
+            background-color: #0284c7;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #0369a1;
+        }
+        
+        /* 页面特定样式 */
+        .header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            position: fixed;
+            width: 100%;
+            z-index: 50;
+        }
+        
+        .hero-section {
+            padding-top: 8rem;
+            padding-bottom: 5rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .upload-area {
+            max-width: 36rem;
+            margin: 0 auto;
+            background-color: #f9fafb;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 2rem !important;
+                line-height: 1.3 !important;
+            }
+            .upload-area {
+                padding: 1rem !important;
+            }
+        }
+        
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        /* 暗色模式 */
+        @media (prefers-color-scheme: dark) {
+            .dark-mode-support {
+                background-color: #1e293b;
+                color: #f1f5f9;
+            }
+        }
+    </style>
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                },
+            }
+        }
+    </script>
     <meta name="description" content="Compress and split PDFs with enterprise-grade security. Your files are processed locally and never stored on our servers.">
     <meta name="keywords" content="PDF, compress, split, security, privacy, free, local processing">
     <meta name="author" content="Zhu Yongchi">
     <!-- 添加favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230ea5e9'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM14 8V3.5L18.5 8H14zm2 11v-1a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1zm-6-5h4a1 1 0 0 0 0-2h-4a1 1 0 0 0 0 2zm-2-4h6a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2z'/></svg>">
 </head>
-<body class="bg-white">
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-white min-h-screen">
+    <!-- 顶部促销横幅 -->
+    <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-2 px-4 text-center relative">
+        <p class="font-medium">
+            🎁 <span class="animate-pulse inline-block">限时优惠</span>: 免费用户文件大小上限提升至 <span class="font-bold underline">50MB</span>! 
+            <span class="hidden sm:inline">截止日期: 2024年5月15日。</span>
+            <a href="#pricing" class="ml-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-full text-sm transition">了解更多 →</a>
+        </p>
+    </div>
+
     <!-- Header -->
-    <header class="fixed w-full bg-white/80 backdrop-blur-md z-50 no-print">
-        <nav class="container mx-auto px-6 py-4">
+    <header class="header py-4">
+        <nav class="container mx-auto px-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <div class="text-2xl font-bold gradient-text">PDF Pro</div>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#features" class="text-gray-600 hover:text-primary-600">Features</a>
-                    <a href="#how-it-works" class="text-gray-600 hover:text-primary-600">How It Works</a>
-                    <a href="#pricing" class="text-gray-600 hover:text-primary-600">Pricing</a>
-                    <a href="#faq" class="text-gray-600 hover:text-primary-600">FAQ</a>
+                    <a href="#features" class="text-gray-600 hover:text-primary-600">功能特点</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-primary-600">如何工作</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-primary-600">定价</a>
+                    <a href="#faq" class="text-gray-600 hover:text-primary-600">常见问题</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative group">
                         <button id="language-selector" class="flex items-center space-x-1 text-gray-600 hover:text-primary-600" aria-label="Select language">
-                            <span id="current-language">English</span>
+                            <span id="current-language">中文</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                         <div id="language-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="en">English</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="en">英语</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="zh">中文</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="es">Español</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="fr">Français</a>
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="de">Deutsch</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="de">deutsch</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="ja">日本語</a>
                             <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-50" data-lang="ko">한국어</a>
                         </div>
                     </div>
-                    <a href="#upload" class="btn-primary">Get Started</a>
+                    <a href="#upload" class="btn-primary">立即开始</a>
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-primary-600" aria-label="Toggle menu">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,39 +175,77 @@
                 </div>
             </div>
             <!-- Mobile menu -->
-            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2">
-                <a href="#features" class="block py-2 text-gray-600 hover:text-primary-600">Features</a>
-                <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-primary-600">How It Works</a>
-                <a href="#pricing" class="block py-2 text-gray-600 hover:text-primary-600">Pricing</a>
-                <a href="#faq" class="block py-2 text-gray-600 hover:text-primary-600">FAQ</a>
+            <div id="mobile-menu" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+                <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-sm mx-auto rounded-lg shadow-xl transform transition-all">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">菜单</h3>
+                        <button id="close-mobile-menu" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <nav class="space-y-4">
+                        <a href="#features" class="block py-2 px-4 text-gray-900 dark:text-white rounded hover:bg-gray-100 dark:hover:bg-gray-700">功能特点</a>
+                        <a href="#how-it-works" class="block py-2 px-4 text-gray-900 dark:text-white rounded hover:bg-gray-100 dark:hover:bg-gray-700">工作原理</a>
+                        <a href="#pricing" class="block py-2 px-4 text-gray-900 dark:text-white rounded hover:bg-gray-100 dark:hover:bg-gray-700">价格</a>
+                        <a href="#faq" class="block py-2 px-4 text-gray-900 dark:text-white rounded hover:bg-gray-100 dark:hover:bg-gray-700">常见问题</a>
+                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">切换语言</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button data-lang="zh" class="px-3 py-1 text-sm bg-primary-600 text-white rounded">中文</button>
+                                <button data-lang="en" class="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">English</button>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
             </div>
         </nav>
     </header>
 
     <!-- Hero Section -->
-    <section id="hero" class="pt-32 pb-20 px-6">
+    <section id="hero" class="hero-section px-6">
         <div class="container mx-auto text-center">
             <h1 class="text-5xl md:text-6xl font-bold mb-6 hero-title">
-                Professional PDF Processing<br>
-                <span class="gradient-text">Made Simple</span>
+                专业的PDF处理<br>
+                <span class="gradient-text">变得简单</span>
             </h1>
             <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                Compress and split PDFs with enterprise-grade security. Your files are processed locally and never stored on our servers.
+                用企业级安全性压缩和拆分PDF。您的文件在本地处理，绝不存储在我们的服务器上。
             </p>
-            <div id="upload" class="max-w-4xl mx-auto bg-gray-50 p-8 rounded-2xl shadow-lg upload-area">
+            
+            <!-- 限时促销提示 -->
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8 max-w-3xl mx-auto rounded-r shadow-md">
+                <div class="flex flex-col md:flex-row md:items-center">
+                    <div class="flex items-center mb-2 md:mb-0">
+                        <div class="py-1 mr-2">
+                            <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <p class="font-bold">🎁 限时优惠：</p>
+                    </div>
+                    <div class="ml-0 md:ml-2 text-left">
+                        <p><span class="font-bold text-red-600">免费用户文件大小限制已提升至50MB</span> - 将于一个月后恢复至5MB</p>
+                        <p class="mt-1 text-sm font-medium">优惠结束倒计时：<span id="countdown-timer" class="font-bold text-red-600">30天00时00分00秒</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="upload" class="upload-area">
                 <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Select Operation</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">选择操作</label>
                     <div class="flex flex-col sm:flex-row justify-center gap-4">
-                        <button class="flex-1 bg-white border-2 border-primary-600 text-primary-600 px-6 py-3 rounded-lg hover:bg-primary-50 transition">Compress PDF</button>
-                        <button class="flex-1 bg-white border-2 border-primary-600 text-primary-600 px-6 py-3 rounded-lg hover:bg-primary-50 transition">Split PDF</button>
+                        <button class="flex-1 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition">压缩PDF</button>
+                        <button class="flex-1 bg-white border-2 border-primary-600 text-primary-600 px-6 py-3 rounded-lg hover:bg-primary-50 transition">拆分PDF</button>
                     </div>
                 </div>
                 <div class="text-center">
-                    <label for="pdf-upload" class="block text-gray-700 text-sm font-bold mb-2">Upload Your PDF</label>
+                    <label for="pdf-upload" class="block text-gray-700 text-sm font-bold mb-2">上传您的PDF</label>
                     <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-primary-500 transition cursor-pointer">
                         <input type="file" id="pdf-upload" class="hidden" accept=".pdf">
-                        <p class="text-gray-500">Drag and drop your PDF here or click to browse</p>
-                        <p class="text-sm text-gray-400 mt-2">Maximum file size: 5MB (Free Plan)</p>
+                        <p class="text-gray-500">在此处拖放PDF或点击浏览</p>
+                        <p class="text-sm text-gray-400 mt-2">📣 <span class="text-green-600 font-semibold">限时优惠：</span> 最大文件大小：<span class="text-red-600 font-bold">50MB</span>（免费计划）</p>
                     </div>
                 </div>
             </div>
@@ -95,22 +255,22 @@
     <!-- Features -->
     <section id="features" class="py-20 bg-gray-50">
         <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-12">Why Choose PDF Pro?</h2>
+            <h2 class="text-4xl font-bold text-center mb-12">为什么选择PDF Pro?</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="feature-card">
                     <div class="text-primary-600 text-2xl mb-4">🔒</div>
-                    <h3 class="text-xl font-bold mb-2">100% Secure</h3>
-                    <p class="text-gray-600">Your files are processed locally in your browser. We never store or transmit your documents.</p>
+                    <h3 class="text-xl font-bold mb-2">100%安全</h3>
+                    <p class="text-gray-600">您的文件在浏览器中本地处理。我们绝不存储或传输您的文档。</p>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="feature-card">
                     <div class="text-primary-600 text-2xl mb-4">⚡</div>
-                    <h3 class="text-xl font-bold mb-2">Lightning Fast</h3>
-                    <p class="text-gray-600">Advanced algorithms ensure quick processing while maintaining quality.</p>
+                    <h3 class="text-xl font-bold mb-2">快速如电</h3>
+                    <p class="text-gray-600">高级算法确保在保持质量的同时快速处理。</p>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="feature-card">
                     <div class="text-primary-600 text-2xl mb-4">💎</div>
-                    <h3 class="text-xl font-bold mb-2">Professional Quality</h3>
-                    <p class="text-gray-600">Enterprise-grade compression and splitting technology.</p>
+                    <h3 class="text-xl font-bold mb-2">专业品质</h3>
+                    <p class="text-gray-600">企业级压缩和拆分技术。</p>
                 </div>
             </div>
         </div>
@@ -119,27 +279,27 @@
     <!-- How It Works -->
     <section id="how-it-works" class="py-20">
         <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-12">How It Works</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            <h2 class="text-4xl font-bold text-center mb-12">如何工作</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="text-center">
-                    <div class="text-3xl mb-4">1️⃣</div>
-                    <h3 class="font-bold mb-2">Upload</h3>
-                    <p class="text-gray-600">Select your PDF file</p>
+                    <div class="bg-primary-100 text-primary-600 rounded-full w-16 h-16 flex items-center justify-center text-2xl mx-auto mb-4">1</div>
+                    <h3 class="text-xl font-bold mb-2">上传</h3>
+                    <p class="text-gray-600">选择您的PDF文件</p>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl mb-4">2️⃣</div>
-                    <h3 class="font-bold mb-2">Choose Options</h3>
-                    <p class="text-gray-600">Select compression level or splitting parameters</p>
+                    <div class="bg-primary-100 text-primary-600 rounded-full w-16 h-16 flex items-center justify-center text-2xl mx-auto mb-4">2</div>
+                    <h3 class="text-xl font-bold mb-2">选择选项</h3>
+                    <p class="text-gray-600">选择压缩级别或拆分参数</p>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl mb-4">3️⃣</div>
-                    <h3 class="font-bold mb-2">Process</h3>
-                    <p class="text-gray-600">We process your file locally</p>
+                    <div class="bg-primary-100 text-primary-600 rounded-full w-16 h-16 flex items-center justify-center text-2xl mx-auto mb-4">3</div>
+                    <h3 class="text-xl font-bold mb-2">处理</h3>
+                    <p class="text-gray-600">我们在本地处理您的文件</p>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl mb-4">4️⃣</div>
-                    <h3 class="font-bold mb-2">Download</h3>
-                    <p class="text-gray-600">Get your processed PDF</p>
+                    <div class="bg-primary-100 text-primary-600 rounded-full w-16 h-16 flex items-center justify-center text-2xl mx-auto mb-4">4</div>
+                    <h3 class="text-xl font-bold mb-2">下载</h3>
+                    <p class="text-gray-600">获取处理后的PDF</p>
                 </div>
             </div>
         </div>
@@ -148,67 +308,81 @@
     <!-- Pricing -->
     <section id="pricing" class="py-20 bg-gray-50">
         <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
+            <h2 class="text-4xl font-bold text-center mb-12">简单透明的价格</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                <div class="bg-white p-8 rounded-xl shadow-sm">
-                    <h3 class="text-xl font-bold mb-4">Free</h3>
-                    <p class="text-4xl font-bold mb-6">$0<span class="text-gray-500 text-base font-normal">/month</span></p>
+                <div class="bg-white p-8 rounded-xl shadow-sm relative overflow-hidden">
+                    <!-- 促销标签 -->
+                    <div class="absolute -right-12 top-6 bg-red-600 text-white px-10 py-1 transform rotate-45 shadow-lg">
+                        限时优惠
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-4">免费版</h3>
+                    <p class="text-4xl font-bold mb-6">¥0<span class="text-gray-500 text-base font-normal">/月</span></p>
                     <ul class="space-y-3 mb-8">
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 1 file per day</li>
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Max 5MB file size</li>
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Basic compression</li>
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Watermarked output</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 每天1个文件</li>
+                        <li class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span> 
+                            <span>
+                                <span class="line-through text-gray-400">最大5MB文件大小</span>
+                                <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded ml-1 font-medium">限时50MB</span>
+                            </span>
+                        </li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 基本压缩</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 带水印输出</li>
                     </ul>
-                    <button class="w-full bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition">Get Started</button>
+                    <button class="w-full bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition">立即开始</button>
                 </div>
                 <div class="bg-primary-600 text-white p-8 rounded-xl shadow-lg transform scale-105 md:scale-105 sm:scale-100">
-                    <h3 class="text-xl font-bold mb-4">Pro</h3>
-                    <p class="text-4xl font-bold mb-6">$9.99<span class="text-gray-200 text-base font-normal">/month</span></p>
+                    <h3 class="text-xl font-bold mb-4">专业版</h3>
+                    <p class="text-4xl font-bold mb-6">¥69<span class="text-gray-200 text-base font-normal">/月</span></p>
                     <ul class="space-y-3 mb-8">
-                        <li class="flex items-center"><span class="text-white mr-2">✓</span> Unlimited files</li>
-                        <li class="flex items-center"><span class="text-white mr-2">✓</span> Max 100MB file size</li>
-                        <li class="flex items-center"><span class="text-white mr-2">✓</span> Advanced compression</li>
-                        <li class="flex items-center"><span class="text-white mr-2">✓</span> No watermark</li>
-                        <li class="flex items-center"><span class="text-white mr-2">✓</span> Priority processing</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> 无限文件</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> 最大100MB文件大小</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> 高级压缩</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> 无水印</li>
+                        <li class="flex items-center"><span class="text-white mr-2">✓</span> 优先处理</li>
                     </ul>
-                    <button class="w-full bg-white text-primary-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition">Subscribe Now</button>
+                    <button class="w-full bg-white text-primary-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition">立即订阅</button>
                 </div>
                 <div class="bg-white p-8 rounded-xl shadow-sm">
-                    <h3 class="text-xl font-bold mb-4">Enterprise</h3>
-                    <p class="text-4xl font-bold mb-6">$49.99<span class="text-gray-500 text-base font-normal">/month</span></p>
+                    <h3 class="text-xl font-bold mb-4">企业版</h3>
+                    <p class="text-4xl font-bold mb-6">¥349<span class="text-gray-500 text-base font-normal">/月</span></p>
                     <ul class="space-y-3 mb-8">
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Everything in Pro</li>
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Unlimited file size</li>
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> API access</li>
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> Custom branding</li>
-                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 24/7 support</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 包含专业版所有功能</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 无限文件大小</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> API访问</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 自定义品牌</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 24/7支持</li>
                     </ul>
-                    <button class="w-full bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition">Contact Sales</button>
+                    <button class="w-full bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition">联系销售</button>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- FAQ -->
-    <section id="faq" class="py-20">
+    <section id="faq" class="py-20 bg-white">
         <div class="container mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            <h2 class="text-4xl font-bold text-center mb-12">常见问题</h2>
             <div class="max-w-3xl mx-auto space-y-6">
-                <div class="bg-white rounded-lg p-6 shadow-sm">
-                    <h3 class="font-bold mb-2">Is my data secure?</h3>
-                    <p class="text-gray-600">Yes, absolutely. All processing happens locally in your browser. We never store or transmit your files to any server.</p>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-lg mb-2">关于免费版50MB文件大小限制优惠</h3>
+                    <p class="text-gray-700">为了回馈用户，我们将免费版文件大小限制从5MB临时提升至50MB。此优惠将于2024年5月15日结束，之后将恢复至原来的5MB限制。</p>
                 </div>
-                <div class="bg-white rounded-lg p-6 shadow-sm">
-                    <h3 class="font-bold mb-2">How does the compression work?</h3>
-                    <p class="text-gray-600">We use advanced algorithms to optimize PDF content while maintaining quality. This includes image optimization, font subsetting, and structure optimization.</p>
+                
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-lg mb-2">优惠期间上传的50MB文件在优惠结束后会怎样？</h3>
+                    <p class="text-gray-700">优惠期间处理的所有文件将永久保留在您的账户中，即使在优惠结束后也能继续访问。但新上传的文件将受到恢复后的5MB限制。</p>
                 </div>
-                <div class="bg-white rounded-lg p-6 shadow-sm">
-                    <h3 class="font-bold mb-2">What's the maximum file size?</h3>
-                    <p class="text-gray-600">Free users can process files up to 5MB, Pro users up to 100MB, and Enterprise users have no limits.</p>
+                
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-lg mb-2">如何最大化利用这个限时优惠？</h3>
+                    <p class="text-gray-700">我们建议您在优惠期间处理那些较大的PDF文件。请记住免费用户每天仍然只能处理1个文件，因此请优先处理最重要的文档。</p>
                 </div>
-                <div class="bg-white rounded-lg p-6 shadow-sm">
-                    <h3 class="font-bold mb-2">Can I process multiple files at once?</h3>
-                    <p class="text-gray-600">Yes, Pro and Enterprise users can process multiple files simultaneously. Free users are limited to one file per day.</p>
+                
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-lg mb-2">如果想要持续处理大于5MB的文件怎么办？</h3>
+                    <p class="text-gray-700">您可以考虑升级到我们的专业版计划，它允许处理最大100MB的文件，且没有每日处理数量的限制。企业版计划则支持无限文件大小。</p>
                 </div>
             </div>
         </div>
@@ -220,30 +394,30 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
                     <h3 class="text-xl font-bold mb-4">PDF Pro</h3>
-                    <p class="text-gray-400">Professional PDF processing tools for everyone.</p>
+                    <p class="text-gray-400">为所有人提供专业的PDF处理工具。</p>
                 </div>
                 <div>
-                    <h4 class="font-bold mb-4">Quick Links</h4>
+                    <h4 class="font-bold mb-4">快速链接</h4>
                     <ul class="space-y-2">
-                        <li><a href="#features" class="text-gray-400 hover:text-white">Features</a></li>
-                        <li><a href="#pricing" class="text-gray-400 hover:text-white">Pricing</a></li>
-                        <li><a href="#faq" class="text-gray-400 hover:text-white">FAQ</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-white">功能特点</a></li>
+                        <li><a href="#pricing" class="text-gray-400 hover:text-white">价格</a></li>
+                        <li><a href="#faq" class="text-gray-400 hover:text-white">常见问题</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold mb-4">Contact</h4>
-                    <p class="text-gray-400">Email: <a href="mailto:527856337@qq.com" class="hover:text-white">527856337@qq.com</a></p>
+                    <h4 class="font-bold mb-4">联系我们</h4>
+                    <p class="text-gray-400">邮箱: <a href="mailto:527856337@qq.com" class="hover:text-white">527856337@qq.com</a></p>
                 </div>
                 <div>
-                    <h4 class="font-bold mb-4">Legal</h4>
+                    <h4 class="font-bold mb-4">法律条款</h4>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">服务条款</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>© 2024 PDF Pro. All rights reserved. Created by Zhu Yongchi</p>
+            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
+                © 2024 PDF Pro. 版权所有。由朱永池创建
             </div>
         </div>
     </footer>
@@ -256,27 +430,89 @@
         </div>
     </div>
 
-    <script type="module" src="/main.js"></script>
+    <script type="module" src="main.js"></script>
     
     <!-- 移动菜单脚本 -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
+        // 启动倒计时
+        function startCountdown() {
+            const endDate = new Date('2024-05-15T23:59:59');
+            const countdownEl = document.getElementById('countdown-timer');
             
-            if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', function() {
+            if (!countdownEl) return;
+            
+            function updateCountdown() {
+                const now = new Date();
+                const diff = endDate - now;
+                
+                if (diff <= 0) {
+                    countdownEl.textContent = '已结束';
+                    return;
+                }
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                countdownEl.textContent = `${days}天${hours.toString().padStart(2, '0')}时${minutes.toString().padStart(2, '0')}分${seconds.toString().padStart(2, '0')}秒`;
+            }
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+        
+        // 移动菜单逻辑
+        function initMobileMenu() {
+            const toggleButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const closeButton = document.getElementById('close-mobile-menu');
+            
+            if (toggleButton && mobileMenu) {
+                toggleButton.addEventListener('click', function() {
                     mobileMenu.classList.toggle('hidden');
+                    document.body.classList.toggle('overflow-hidden');
                 });
                 
-                // 点击移动菜单项后关闭菜单
-                const mobileMenuItems = mobileMenu.querySelectorAll('a');
-                mobileMenuItems.forEach(item => {
-                    item.addEventListener('click', function() {
+                if (closeButton) {
+                    closeButton.addEventListener('click', function() {
                         mobileMenu.classList.add('hidden');
+                        document.body.classList.remove('overflow-hidden');
+                    });
+                }
+                
+                // 关闭菜单的点击
+                const menuLinks = mobileMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                        document.body.classList.remove('overflow-hidden');
+                    });
+                });
+                
+                // 语言切换
+                const langButtons = mobileMenu.querySelectorAll('[data-lang]');
+                langButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const lang = this.getAttribute('data-lang');
+                        // 更改语言逻辑（如果需要实现）
+                        
+                        // 更新按钮样式
+                        langButtons.forEach(btn => {
+                            btn.classList.remove('bg-primary-600', 'text-white');
+                            btn.classList.add('bg-gray-200', 'text-gray-700');
+                        });
+                        this.classList.remove('bg-gray-200', 'text-gray-700');
+                        this.classList.add('bg-primary-600', 'text-white');
                     });
                 });
             }
+        }
+        
+        // 文档加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            startCountdown();
+            initMobileMenu();
         });
     </script>
 </body>
