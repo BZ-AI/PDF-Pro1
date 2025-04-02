@@ -354,6 +354,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 初始化语言切换
   initializeLanguageSwitcher();
+  
+  // 初始化社交分享功能
+  initializeShareFeature();
 });
 
 // 更新UI语言
@@ -385,43 +388,56 @@ function updateUILanguage(lang) {
 // 初始化上传区域
 function initializeUploadArea() {
   const uploadArea = document.querySelector('.upload-area');
+  const uploadDropArea = document.getElementById('upload-drop-area');
   const fileInput = document.getElementById('pdf-upload');
+  const browseButton = document.getElementById('browse-button');
   
-  if (!uploadArea || !fileInput) return;
+  if (!uploadArea) return;
   
   // 拖放功能
-  uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('border-primary-500');
-  });
-  
-  uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('border-primary-500');
-  });
-  
-  uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadArea.classList.remove('border-primary-500');
+  if (uploadDropArea) {
+    uploadDropArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadDropArea.classList.add('border-primary-500');
+    });
     
-    if (e.dataTransfer.files.length) {
-      fileInput.files = e.dataTransfer.files;
-      handleFileUpload(e.dataTransfer.files[0]);
-    }
-  });
+    uploadDropArea.addEventListener('dragleave', () => {
+      uploadDropArea.classList.remove('border-primary-500');
+    });
+    
+    uploadDropArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadDropArea.classList.remove('border-primary-500');
+      
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        handleFileUpload(e.dataTransfer.files[0]);
+      }
+    });
+    
+    // 点击上传区域触发文件选择
+    uploadDropArea.addEventListener('click', (e) => {
+      if (e.target !== browseButton) {
+        fileInput.click();
+      }
+    });
+  }
   
-  // 点击上传
-  const uploadDiv = fileInput.parentElement;
-  if (uploadDiv) {
-    uploadDiv.addEventListener('click', () => {
+  // 专门的浏览按钮
+  if (browseButton) {
+    browseButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // 防止冒泡到上传区域
       fileInput.click();
     });
   }
   
-  fileInput.addEventListener('change', (e) => {
-    if (fileInput.files.length) {
-      handleFileUpload(fileInput.files[0]);
-    }
-  });
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      if (fileInput.files.length) {
+        handleFileUpload(fileInput.files[0]);
+      }
+    });
+  }
 }
 
 // 初始化操作按钮
@@ -606,4 +622,127 @@ function downloadPDF(pdfBytes, fileName) {
     URL.revokeObjectURL(url);
     document.body.removeChild(a);
   }, 100);
+}
+
+// 社交分享功能
+function initializeShareFeature() {
+  const shareToggle = document.getElementById('share-toggle');
+  const shareButtons = document.getElementById('share-buttons');
+  const qrModal = document.getElementById('qr-modal');
+  const closeModal = document.getElementById('close-modal');
+  const qrTitle = document.getElementById('qr-title');
+  const qrcodeContainer = document.getElementById('qrcode-container');
+  const downloadQrBtn = document.getElementById('download-qr');
+  const copySuccess = document.getElementById('copy-success');
+  
+  if (!shareToggle || !shareButtons) return;
+  
+  // 显示/隐藏分享按钮
+  shareToggle.addEventListener('click', () => {
+    const isHidden = shareButtons.classList.contains('hidden');
+    
+    if (isHidden) {
+      shareButtons.classList.remove('hidden');
+      // 延迟一帧以确保DOM更新，然后添加动画
+      requestAnimationFrame(() => {
+        shareButtons.classList.remove('opacity-0', 'translate-y-4');
+      });
+    } else {
+      shareButtons.classList.add('opacity-0', 'translate-y-4');
+      // 等待过渡完成后隐藏
+      setTimeout(() => {
+        shareButtons.classList.add('hidden');
+      }, 300);
+    }
+  });
+  
+  // 处理各个分享平台
+  const shareButtonsList = document.querySelectorAll('.share-button');
+  shareButtonsList.forEach(button => {
+    button.addEventListener('click', () => {
+      const platform = button.getAttribute('data-platform');
+      shareContent(platform);
+    });
+  });
+  
+  // 关闭二维码模态框
+  if (closeModal) {
+    closeModal.addEventListener('click', () => {
+      qrModal.classList.add('hidden');
+    });
+  }
+  
+  // 下载二维码
+  if (downloadQrBtn) {
+    downloadQrBtn.addEventListener('click', downloadQRCode);
+  }
+  
+  // 分享内容
+  function shareContent(platform) {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(document.title);
+    const description = encodeURIComponent('专业的PDF处理工具，免费用户现在可享受50MB上传限制！');
+    
+    switch(platform) {
+      case 'wechat':
+        showQRCode('微信', url);
+        break;
+      case 'qq':
+        window.open(`http://connect.qq.com/widget/shareqq/index.html?url=${url}&title=${title}&desc=${description}`, '_blank');
+        break;
+      case 'weibo':
+        window.open(`http://service.weibo.com/share/share.php?url=${url}&title=${title}`, '_blank');
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(window.location.href)
+          .then(() => {
+            if (copySuccess) {
+              copySuccess.classList.remove('hidden');
+              setTimeout(() => {
+                copySuccess.classList.add('hidden');
+              }, 3000);
+            } else {
+              alert('链接已复制到剪贴板！');
+            }
+          })
+          .catch(err => {
+            alert('复制失败: ' + err);
+          });
+        break;
+    }
+  }
+  
+  // 显示二维码
+  function showQRCode(title, url) {
+    if (!qrModal || !qrTitle || !qrcodeContainer) return;
+    
+    qrTitle.textContent = `分享到${title}`;
+    qrcodeContainer.innerHTML = ''; // 清空容器
+    
+    // 创建QR代码 - 这里使用第三方库 qrcode.js
+    // 如果你没有添加qrcode.js库，可以使用以下在线API生成二维码
+    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${url}`;
+    const qrImage = document.createElement('img');
+    qrImage.src = qrImageUrl;
+    qrImage.alt = '分享二维码';
+    qrImage.className = 'w-full h-full';
+    qrcodeContainer.appendChild(qrImage);
+    
+    // 显示模态框
+    qrModal.classList.remove('hidden');
+  }
+  
+  // 下载二维码
+  function downloadQRCode() {
+    const qrImg = qrcodeContainer.querySelector('img');
+    if (!qrImg) return;
+    
+    // 创建临时链接并触发下载
+    const a = document.createElement('a');
+    a.href = qrImg.src;
+    a.download = 'share-qrcode.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }
